@@ -834,12 +834,12 @@
 
         <section class="hero" id="accueil">
             <h1>Plateforme Nationale de <span>Physique & Chimie</span></h1>
-            <p>Accédez aux Cours, Exercices, Séries et Devoirs adaptés à votre filière officielle tunisienne[cite: 2].</p>
+            <p>Accédez aux Cours, Exercices, Séries et Devoirs adaptés à votre filière officielle tunisienne.</p>
             
             <div class="welcome-card">
                 <div class="welcome-info">
                     <h3 id="welcomeGreeting">Bienvenue dans ton espace !</h3>
-                    <p id="welcomeLevelInfo">Programme officiel tunisien synchronisé[cite: 2].</p>
+                    <p id="welcomeLevelInfo">Programme officiel tunisien synchronisé.</p>
                 </div>
                 <div style="font-size: 26px;">⚡</div>
             </div>
@@ -856,14 +856,14 @@
                         <div class="subject-icon">⚙️</div>
                         <h3>Physique</h3>
                         <p>Cours, résumés, exercices, séries et devoirs corrigés.</p>
-                        <span class="subject-badge" id="badgePhysiqueCount">Ressources officielles</span>
+                        <span class="subject-badge" id="badgePhysiqueCount">Chapitres officiels</span>
                     </div>
 
                     <div class="subject-card-big" onclick="openSubjectHub('chimie')">
                         <div class="subject-icon">🧪</div>
                         <h3>Chimie</h3>
                         <p>Réactions, équilibres, exercices, séries et devoirs.</p>
-                        <span class="subject-badge" id="badgeChimieCount">Ressources officielles</span>
+                        <span class="subject-badge" id="badgeChimieCount">Chapitres officiels</span>
                     </div>
                 </div>
             </div>
@@ -901,7 +901,7 @@
                     <div class="subject-card-big" onclick="selectCategory('devoirs')">
                         <div class="subject-icon">📝</div>
                         <h3>Devoirs</h3>
-                        <p>Devoirs de contrôle, de synthèse et examens classés par trimestre.</p>
+                        <p>Devoirs de contrôle, de synthèse et examens.</p>
                         <span class="subject-badge">Évaluer</span>
                     </div>
                 </div>
@@ -910,7 +910,7 @@
             <!-- VIEW 3: LESSONS & CONTENT LIST VIEW -->
             <div class="view-section" id="lessonsListView">
                 <div class="back-nav">
-                    <h2 class="page-header-title" id="lessonsListHeaderTitle">⚙️ Contenus</h2>
+                    <h2 class="page-header-title" id="lessonsListHeaderTitle">⚙️ Chapitres</h2>
                     <button class="btn-back" onclick="backToSubHub()">← Retour aux catégories</button>
                 </div>
                 <div class="lessons-grid" id="lessonsContainer"></div>
@@ -918,7 +918,7 @@
         </div>
 
         <footer>
-            <p>&copy; 2026 Tunisie Académie. Programme officiel tunisien de la 1ère année au Baccalauréat[cite: 2].</p>
+            <p>&copy; 2026 Tunisie Académie. Programme officiel tunisien de la 1ère année au Baccalauréat.</p>
         </footer>
     </div>
 
@@ -927,7 +927,7 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5bGZjenlwZWlkYWtienBhZXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTA2OTMsImV4cCI6MjEwNDM2NjY5M30.e7KrZLpPdl-irVhsZYTHIG9Ht1YQ0OWdOT3MCBBiJg0'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Données des chapitres de base pour les sections standard (Cours, Exercices, Séries)
+        // Données des chapitres de base
         const p1_1 = { id: "1p1", title: "Chapitre 1 : Le courant électrique continu", desc: "Intensité du courant et tension électrique." };
         const p1_2 = { id: "1p2", title: "Chapitre 2 : Les circuits électriques", desc: "Lois d'unicité et d'additivité." };
         const p1_3 = { id: "1p3", title: "Chapitre 3 : Propagation rectiligne de la lumière", desc: "Sources de lumière, récepteurs et ombres." };
@@ -983,28 +983,6 @@
         const c4_7 = { id: "4c7", title: "Chapitre 7 : pH des solutions aqueuses", desc: "Acides/bases forts et faibles." };
         const c4_8 = { id: "4c8", title: "Chapitre 8 : Réactions de dosage", desc: "Titrages acido-basiques." };
 
-        // Structure officielle des Devoirs classés par Trimestre (basée sur le régime officiel tunisien)
-        const devoirs1ereData = {
-            physique: [
-                { id: "1ere_phys_t1_dc1", title: "1ère Année - Trimestre 1 : Devoir de Contrôle N°1", desc: "Évaluation portant sur le courant électrique continu et les circuits de base." },
-                { id: "1ere_phys_t1_ds", title: "1ère Année - Trimestre 1 : Devoir de Synthèse N°1", desc: "Examen global du 1er trimestre : Électricité et Lumière." },
-                { id: "1ere_phys_t2_dc1", title: "1ère Année - Trimestre 2 : Devoir de Contrôle N°1", desc: "Évaluation sur la propagation rectiligne de la lumière et les ombres." },
-                { id: "1ere_phys_t2_dc2", title: "1ère Année - Trimestre 2 : Devoir de Contrôle N°2", desc: "Évaluation approfondie sur la notion de force et ses caractéristiques." },
-                { id: "1ere_phys_t2_ds", title: "1ère Année - Trimestre 2 : Devoir de Synthèse N°2", desc: "Examen de contrôle semestriel (2ème trimestre)." },
-                { id: "1ere_phys_t3_dc1", title: "1ère Année - Trimestre 3 : Devoir de Contrôle N°1", desc: "Évaluation sur l'équilibre d'un solide soumis à deux forces." },
-                { id: "1ere_phys_t3_ds", title: "1ère Année - Trimestre 3 : Devoir de Synthèse N°3 (Examen Final)", desc: "Examen final de fin d'année de Physique - 1ère Année Secondaire." }
-            ],
-            chimie: [
-                { id: "1ere_chim_t1_dc1", title: "1ère Année - Trimestre 1 : Devoir de Contrôle N°1 (Chimie)", desc: "États physiques de la matière et mélanges." },
-                { id: "1ere_chim_t1_ds", title: "1ère Année - Trimestre 1 : Devoir de Synthèse N°1 (Chimie)", desc: "Synthèse Trimestre 1 : Corps purs, mélanges et solutions aqueuses." },
-                { id: "1ere_chim_t2_dc1", title: "1ère Année - Trimestre 2 : Devoir de Contrôle N°1 (Chimie)", desc: "Solutions aqueuses et concentration massive." },
-                { id: "1ere_chim_t2_dc2", title: "1ère Année - Trimestre 2 : Devoir de Contrôle N°2 (Chimie)", desc: "Introduction au modèle atomique et symboles chimiques." },
-                { id: "1ere_chim_t2_ds", title: "1ère Année - Trimestre 2 : Devoir de Synthèse N°2 (Chimie)", desc: "Synthèse Trimestre 2 : Chimie descriptive." },
-                { id: "1ere_chim_t3_dc1", title: "1ère Année - Trimestre 3 : Devoir de Contrôle N°1 (Chimie)", desc: "Évaluation sur la structure de l'atome et des molécules." },
-                { id: "1ere_chim_t3_ds", title: "1ère Année - Trimestre 3 : Devoir de Synthèse N°3 (Examen Final)", desc: "Examen final de fin d'année de Chimie - 1ère Année Secondaire." }
-            ]
-        };
-
         const curriculumData = {
             "1ere": {
                 levelName: "1ère Année Secondaire",
@@ -1056,6 +1034,7 @@
         let currentCategory = "cours"; // 'cours', 'exercices', 'series', 'devoirs'
 
         // Structure de suivi par catégorie pour chaque leçon
+        // userProgressData[subject][category][lessonId] = { pdf: bool, vid: bool }
         let userProgressData = {
             physique: { cours: {}, exercices: {}, series: {}, devoirs: {} },
             chimie: { cours: {}, exercices: {}, series: {}, devoirs: {} }
@@ -1151,7 +1130,7 @@
                 cours: "📚 Cours",
                 exercices: "✍️ Exercices",
                 series: "📑 Séries",
-                devoirs: "📝 Devoirs (Classement Officiel)"
+                devoirs: "📝 Devoirs"
             };
 
             const subjName = currentSubject === 'physique' ? 'Physique' : 'Chimie';
@@ -1264,53 +1243,46 @@
 
         function renderLessons() {
             const container = document.getElementById('lessonsContainer');
+            const sectionData = curriculumData[currentLevelKey].sections[currentSectionKey];
+            if (!sectionData) return;
+            const lessonsList = sectionData[currentSubject];
+
             container.innerHTML = '';
 
-            let itemsList = [];
-
-            // Si la catégorie est "devoirs" et que le niveau est "1ere", on utilise le classement officiel par trimestres
-            if (currentCategory === 'devoirs' && currentLevelKey === '1ere') {
-                itemsList = devoirs1ereData[currentSubject] || [];
-            } else {
-                // Pour les autres niveaux ou catégories, on récupère les items standards du cursus
-                const sectionData = curriculumData[currentLevelKey].sections[currentSectionKey];
-                if (!sectionData) return;
-                itemsList = sectionData[currentSubject];
-            }
-
-            itemsList.forEach(item => {
-                if (!userProgressData[currentSubject][currentCategory][item.id]) {
-                    userProgressData[currentSubject][currentCategory][item.id] = { pdf: false, vid: false };
+            lessonsList.forEach(lesson => {
+                // Récupérer l'état de progression pour ce sujet, cette catégorie et cette leçon
+                if (!userProgressData[currentSubject][currentCategory][lesson.id]) {
+                    userProgressData[currentSubject][currentCategory][lesson.id] = { pdf: false, vid: false };
                 }
-                const prog = userProgressData[currentSubject][currentCategory][item.id];
+                const prog = userProgressData[currentSubject][currentCategory][lesson.id];
 
                 let score = 0;
                 if (prog.pdf) score += 50;
                 if (prog.vid) score += 50;
 
                 const pdfClass = prog.pdf ? 'completed' : '';
-                const pdfText = prog.pdf ? '📄 PDF Téléchargé (50%)' : '📥 Télécharger PDF';
+                const pdfText = prog.pdf ? '📄 Support Consulté (50%)' : '📥 Consulter le Support';
                 const vidClass = prog.vid ? 'completed' : '';
                 const vidText = prog.vid ? '▶ Correction Visionnée (50%)' : '▶ Voir la Correction';
 
                 const cardHTML = `
                     <div class="lesson-card">
                         <div class="lesson-top">
-                            <h4>${item.title}</h4>
-                            <p>${item.desc}</p>
+                            <h4>${lesson.title}</h4>
+                            <p>${lesson.desc}</p>
                         </div>
                         <div class="progress-container">
                             <div class="progress-info">
-                                <span>Statut de consultation</span>
-                                <span id="progVal-${item.id}">${score} / 100</span>
+                                <span>Maîtrise automatique</span>
+                                <span id="progVal-${lesson.id}">${score} / 100</span>
                             </div>
                             <div class="progress-bar-bg">
-                                <div class="progress-bar-fill" id="progBar-${item.id}" style="width: ${score}%;"></div>
+                                <div class="progress-bar-fill" id="progBar-${lesson.id}" style="width: ${score}%;"></div>
                             </div>
                         </div>
                         <div class="lesson-footer">
-                            <button onclick="toggleResource('${item.id}', 'pdf')" class="btn-action btn-pdf ${pdfClass}" id="btnPdf-${item.id}">${pdfText}</button>
-                            <button onclick="toggleResource('${item.id}', 'vid')" class="btn-action btn-vid ${vidClass}" id="btnVid-${item.id}">${vidText}</button>
+                            <button onclick="toggleResource('${lesson.id}', 'pdf')" class="btn-action btn-pdf ${pdfClass}" id="btnPdf-${lesson.id}">${pdfText}</button>
+                            <button onclick="toggleResource('${lesson.id}', 'vid')" class="btn-action btn-vid ${vidClass}" id="btnVid-${lesson.id}">${vidText}</button>
                         </div>
                     </div>
                 `;
@@ -1318,8 +1290,8 @@
             });
         }
 
-        function toggleResource(itemId, type) {
-            const prog = userProgressData[currentSubject][currentCategory][itemId];
+        function toggleResource(lessonId, type) {
+            const prog = userProgressData[currentSubject][currentCategory][lessonId];
 
             if (type === 'pdf') {
                 prog.pdf = !prog.pdf;
@@ -1331,18 +1303,18 @@
             if (prog.pdf) score += 50;
             if (prog.vid) score += 50;
 
-            document.getElementById(`progVal-${itemId}`).textContent = `${score} / 100`;
-            document.getElementById(`progBar-${itemId}`).style.width = `${score}%`;
+            document.getElementById(`progVal-${lessonId}`).textContent = `${score} / 100`;
+            document.getElementById(`progBar-${lessonId}`).style.width = `${score}%`;
 
-            const pdfBtn = document.getElementById(`btnPdf-${itemId}`);
-            const vidBtn = document.getElementById(`btnVid-${itemId}`);
+            const pdfBtn = document.getElementById(`btnPdf-${lessonId}`);
+            const vidBtn = document.getElementById(`btnVid-${lessonId}`);
 
             if (prog.pdf) {
                 pdfBtn.classList.add('completed');
-                pdfBtn.textContent = '📄 PDF Téléchargé (50%)';
+                pdfBtn.textContent = '📄 Support Consulté (50%)';
             } else {
                 pdfBtn.classList.remove('completed');
-                pdfBtn.textContent = '📥 Télécharger PDF';
+                pdfBtn.textContent = '📥 Consulter le Support';
             }
 
             if (prog.vid) {
