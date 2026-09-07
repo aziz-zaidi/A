@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tunisie Académie - Orientation & Suivi Pédagogique</title>
+    <!-- Chargement de la bibliothèque Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --bg-panel: #111827;
+            --orange-primary: #f97316;
+            --orange-hover: #ea580c;
+            --text-white: #ffffff;
+            --text-muted: #94a3b8;
+            --border-color: rgba(249, 115, 22, 0.2);
+            --transition-smooth: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        /* --- 1. PROFESSIONAL LOGIN SCREEN & AUTH TABS --- */
+        #auth-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, rgba(9, 13, 22, 0.95), rgba(17, 24, 39, 0.98)), url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=80') center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: rgba(17, 24, 39, 0.88);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            padding: 35px 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            animation: fadeInDown 0.6s var(--transition-smooth);
+            margin: auto;
+        }
+
+        .auth-logo {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-white);
+            margin-bottom: 6px;
+        }
+
+        .auth-logo span {
+            color: var(--orange-primary);
+        }
+
+        .auth-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        /* Switcher pour Login / Signup */
+        .auth-switcher {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .switcher-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .switcher-btn.active {
+            background: var(--orange-primary);
+            color: var(--text-white);
+            box-shadow: 0 2px 10px rgba(249, 115, 22, 0.4);
+        }
+
+        .auth-form-panel {
+            display: none;
+        }
+
+        .auth-form-panel.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-white);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--text-white);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--orange-primary);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+        }
+
+        .input-group select option {
+            background: var(--bg-panel);
+            color: var(--text-white);
+        }
+
+        /* Fluid expansion container for orientation/section */
+        .expandable-section {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.4s ease, margin-bottom 0.4s ease;
+            margin-bottom: 0;
+        }
+
+        .expandable-section.expanded {
+            max-height: 150px;
+            opacity: 1;
+            margin-bottom: 18px;
+        }
+
+        .btn-custom {
+            width: 100%;
+            padding: 14px;
+            background: var(--orange-primary);
+            color: var(--text-white);
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+            margin-top: 10px;
+        }
+
+        .btn-custom:hover {
+            background: var(--orange-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.6);
+        }
+
+        /* --- 2. MAIN DASHBOARD --- */
+        #main-dashboard {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        #main-dashboard.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* --- 3. HAMBURGER MENU & DRAWER --- */
+        .menu-trigger {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+            background: var(--bg-dark);
+            border: 2px solid var(--orange-primary);
+            color: var(--orange-primary);
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: var(--transition-smooth);
+        }
+
+        .menu-trigger:hover {
+            background: var(--orange-primary);
+            color: var(--text-white);
+            transform: scale(1.05);
+        }
+
+        .nav-drawer {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-dark);
+            border-right: 1px solid var(--border-color);
+            z-index: 9998;
+            padding: 80px 25px 30px 25px;
+            display: flex;
+            flex-direction: column;
+            transition: left 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+        }
+
+        .nav-drawer.open {
+            left: 0;
+        }
+
+        .drawer-header {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--orange-primary);
+            font-weight: 800;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        .drawer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-grow: 1;
+        }
+
+        .drawer-links a {
+            text-decoration: none;
+            color: var(--text-white);
+            font-size: 15px;
+            font-weight: 500;
+            padding: 10px 14px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .drawer-links a:hover {
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--orange-primary);
+            padding-left: 20px;
+        }
+
+        .drawer-logout {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444 !important;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .drawer-logout:hover {
+            background: #ef4444;
+            color: #fff !important;
+        }
+
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9997;
+            display: none;
+            transition: 0.4s;
+        }
+
+        .drawer-overlay.active {
+            display: block;
+        }
+
+        /* --- 4. HEADER --- */
+        header {
+            background: #ffffff;
+            padding: 18px 5% 18px 85px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--bg-dark);
+        }
+
+        .brand-title span {
+            color: var(--orange-primary);
+        }
+
+        /* Improved clean user pill container */
+        .user-pill {
+            background: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+            max-width: 100%;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .user-pill-content {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* --- 5. HERO SECTION --- */
+        .hero {
+            background: linear-gradient(135deg, var(--bg-dark), var(--bg-panel));
+            color: var(--text-white);
+            padding: 50px 5%;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+            margin-bottom: 12px;
+            font-weight: 800;
+        }
+
+        .hero h1 span {
+            color: var(--orange-primary);
+        }
+
+        .hero p {
+            font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+            color: var(--text-muted);
+            max-width: 650px;
+            margin: 0 auto 20px auto;
+            line-height: 1.5;
+        }
+
+        .welcome-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 15px 20px;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: left;
+        }
+
+        .welcome-info h3 {
+            font-size: 14px;
+            color: var(--text-white);
+            margin-bottom: 2px;
+        }
+
+        .welcome-info p {
+            font-size: 12px;
+            color: var(--orange-primary);
+            margin: 0;
+        }
+
+        /* --- 6. HUB & SUBJECT CARDS --- */
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 5%;
+        }
+
+        .hub-view {
+            display: block;
+        }
+        .hub-view.hidden {
+            display: none;
+        }
+
+        .hub-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--bg-dark);
+            margin-bottom: 8px;
+        }
+
+        .hub-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 40px;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .subject-card-big {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subject-card-big::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 6px;
+            background: var(--orange-primary);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .subject-card-big:hover {
+            transform: translateY(-8px);
+            border-color: var(--orange-primary);
+            box-shadow: 0 20px 40px rgba(249, 115, 22, 0.15);
+        }
+
+        .subject-card-big:hover::before {
+            transform: scaleX(1);
+        }
+
+        .subject-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(249, 115, 22, 0.1);
+            color: var(--orange-primary);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            margin: 0 auto 20px auto;
+            transition: var(--transition-smooth);
+        }
+
+        .subject-card-big:hover .subject-icon {
+            background: var(--orange-primary);
+            color: #fff;
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .subject-card-big h3 {
+            font-size: 22px;
+            color: var(--bg-dark);
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .subject-card-big p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .subject-badge {
+            display: inline-block;
+            background: #f1f5f9;
+            color: #475569;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* --- 7. LESSONS VIEWS --- */
+        .subject-page-view {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .subject-page-view.active {
+            display: block;
+        }
+
+        .back-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .btn-back {
+            background: #e2e8f0;
+            color: #334155;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back:hover {
+            background: var(--orange-primary);
+            color: #fff;
+        }
+
+        .page-header-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 25px;
+        }
+
+        .lesson-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--orange-primary);
+            box-shadow: 0 10px 25px rgba(249, 115, 22, 0.08);
+        }
+
+        .lesson-top h4 {
+            font-size: 17px;
+            color: var(--bg-dark);
+            margin-bottom: 6px;
+        }
+
+        .lesson-top p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .progress-container {
+            margin-bottom: 20px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 10px;
+            background: #f1f5f9;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #cbd5e1;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--orange-primary), #fb923c);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .lesson-footer {
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 15px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+        }
+
+        .btn-pdf {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+
+        .btn-pdf.completed {
+            background: #dcfce7;
+            color: #166534;
+            border-color: #86efac;
+        }
+
+        .btn-pdf:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-vid {
+            background: var(--orange-primary);
+            color: #fff;
+        }
+
+        .btn-vid.completed {
+            background: #16a34a;
+            color: #fff;
+        }
+
+        .btn-vid:hover {
+            background: var(--orange-hover);
+        }
+
+        footer {
+            background: var(--bg-dark);
+            color: var(--text-muted);
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 80px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        footer p {
+            font-size: 13px;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PROFESSIONAL AUTH SCREEN WITH TABS (LOGIN / SIGNUP) -->
+    <div id="auth-screen">
+        <div class="auth-container">
+            <div class="auth-logo">Tunisie<span>Académie</span></div>
+            <p class="auth-subtitle">Portail Pédagogique Officiel - De la 1ère au Bac</p>
+            
+            <div class="auth-switcher">
+                <button type="button" class="switcher-btn active" id="tabLoginBtn" onclick="switchAuthMode('login')">Se Connecter</button>
+                <button type="button" class="switcher-btn" id="tabSignupBtn" onclick="switchAuthMode('signup')">S'inscrire</button>
+            </div>
+
+            <!-- Formulaire de Connexion -->
+            <div class="auth-form-panel active" id="loginPanel">
+                <form onsubmit="handleAuth(event, 'login')">
+                    <div class="input-group">
+                        <label for="login-email">Adresse Email</label>
+                        <input type="email" id="login-email" required placeholder="ex: mon@email.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="login-password">Mot de passe</label>
+                        <input type="password" id="login-password" required placeholder="Votre mot de passe">
+                    </div>
+                    <button type="submit" class="btn-custom">Se connecter</button>
+                </form>
+            </div>
+
+            <!-- Formulaire d'Inscription -->
+            <div class="auth-form-panel" id="signupPanel">
+                <form onsubmit="handleAuth(event, 'signup')">
+                    <div class="input-group">
+                        <label for="signup-name">Nom et Prénom</label>
+                        <input type="text" id="signup-name" required placeholder="ex: Mohamed Aziz">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="signup-email">Adresse Email</label>
+                        <input type="email" id="signup-email" required placeholder="ex: mon@email.com">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="signup-password">Mot de passe</label>
+                        <input type="password" id="signup-password" required placeholder="Créez un mot de passe">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="student-level">Niveau Scolaire</label>
+                        <select id="student-level" onchange="handleLevelChange(this.value)" required>
+                            <option value="" disabled selected>-- Choisir votre niveau --</option>
+                            <option value="1ere">1ère Année Secondaire</option>
+                            <option value="2eme">2ème Année Secondaire</option>
+                            <option value="3eme">3ème Année Secondaire</option>
+                            <option value="bac">Baccalauréat</option>
+                        </select>
+                    </div>
+
+                    <!-- Fluid Expansion Section Selector -->
+                    <div class="input-group expandable-section" id="sectionExpandableGroup">
+                        <label for="student-section">Filière / Section Spécifique</label>
+                        <select id="student-section">
+                            <!-- Dynamically populated via JS -->
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-custom">Créer mon compte</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- HAMBURGER BUTTON -->
+    <div class="menu-trigger" onclick="toggleDrawer()" title="Ouvrir le menu">☰</div>
+
+    <!-- DRAWER -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+    <div class="nav-drawer" id="navDrawer">
+        <div class="drawer-header">Menu Principal</div>
+        <ul class="drawer-links">
+            <li><a href="#" onclick="toggleDrawer(); showHub();"><span>Accueil / Choix Matières</span> ➔</a></li>
+            <li><a href="#" onclick="toggleDrawer(); showSubjectPage('physique');"><span>Partie Physique</span> ➔</a></li>
+            <li><a href="#" onclick="toggleDrawer(); showSubjectPage('chimie');"><span>Partie Chimie</span> ➔</a></li>
+        </ul>
+        <a class="drawer-logout" onclick="triggerLogout()">Déconnexion</a>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="main-dashboard">
+        <header>
+            <div class="brand-title">Tunisie<span>Académie</span></div>
+            <div class="user-pill">
+                <span class="status-dot"></span>
+                <div class="user-pill-content">
+                    <span id="displayUserName">Élève</span> &bull; <strong id="displayUserLevel" style="color:var(--orange-primary);">Niveau</strong>
+                </div>
+            </div>
+        </header>
+
+        <section class="hero" id="accueil">
+            <h1>Plateforme Nationale de <span>Physique & Chimie</span></h1>
+            <p>Sélectionnez une matière pour étudier les chapitres officiels de votre filière. Votre progression s'actualise automatiquement en consultant les cours et vidéos.</p>
+            
+            <div class="welcome-card">
+                <div class="welcome-info">
+                    <h3 id="welcomeGreeting">Bienvenue dans ton espace !</h3>
+                    <p id="welcomeLevelInfo">Programme officiel tunisien synchronisé.</p>
+                </div>
+                <div style="font-size: 26px;">⚡</div>
+            </div>
+        </section>
+
+        <div class="container">
+            <!-- VIEW 1: SUBJECT HUB -->
+            <div class="hub-view" id="hubView">
+                <h2 class="hub-title">Choisissez votre matière</h2>
+                <p class="hub-subtitle">Cliquez sur une icône pour afficher les leçons adaptées à votre filière.</p>
+                
+                <div class="subjects-grid">
+                    <div class="subject-card-big" onclick="showSubjectPage('physique')">
+                        <div class="subject-icon">⚙️</div>
+                        <h3>Physique</h3>
+                        <p>Cours, résumés, exercices et suivis automatiques de progression.</p>
+                        <span class="subject-badge" id="badgePhysiqueCount">Chapitres officiels</span>
+                    </div>
+
+                    <div class="subject-card-big" onclick="showSubjectPage('chimie')">
+                        <div class="subject-icon">🧪</div>
+                        <h3>Chimie</h3>
+                        <p>Réactions, équilibres, transformations et suivis automatiques.</p>
+                        <span class="subject-badge" id="badgeChimieCount">Chapitres officiels</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: PHYSIQUE LESSONS -->
+            <div class="subject-page-view" id="physiqueView">
+                <div class="back-nav">
+                    <h2 class="page-header-title">⚙️ Espace Physique (<span class="levelNameDisplay"></span>)</h2>
+                    <button class="btn-back" onclick="showHub()">← Retour aux matières</button>
+                </div>
+                <div class="lessons-grid" id="physiqueLessonsContainer"></div>
+            </div>
+
+            <!-- VIEW 3: CHIMIE LESSONS -->
+            <div class="subject-page-view" id="chimieView">
+                <div class="back-nav">
+                    <h2 class="page-header-title">🧪 Espace Chimie (<span class="levelNameDisplay"></span>)</h2>
+                    <button class="btn-back" onclick="showHub()">← Retour aux matières</button>
+                </div>
+                <div class="lessons-grid" id="chimieLessonsContainer"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 Tunisie Académie. Programme officiel tunisien de la 1ère année au Baccalauréat.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialisation de Supabase
+        const SUPABASE_URL = 'https://xylfczypeidakbzpaeti.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5bGZjenlwZWlkYWtienBhZXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTA2OTMsImV4cCI6MjEwNDM2NjY5M30.e7KrZLpPdl-irVhsZYTHIG9Ht1YQ0OWdOT3MCBBiJg0'; 
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // --- 1ère Année Secondaire ---
+        const p1_1 = { id: "1p1", title: "Chapitre 1 : Le courant électrique continu (Intensité et tension)", desc: "Intensité du courant et tension électrique.", pdf: false, vid: false };
+        const p1_2 = { id: "1p2", title: "Chapitre 2 : Les circuits électriques (Lois des intensités et des tensions)", desc: "Lois d'unicité et d'additivité.", pdf: false, vid: false };
+        const p1_3 = { id: "1p3", title: "Chapitre 3 : Propagation rectiligne de la lumière (Sources, récepteurs, ombres)", desc: "Sources de lumière, récepteurs et ombres.", pdf: false, vid: false };
+        const p1_4 = { id: "1p4", title: "Chapitre 4 : Notion de force et ses caractéristiques", desc: "Caractéristiques et actions mécaniques.", pdf: false, vid: false };
+        const p1_5 = { id: "1p5", title: "Chapitre 5 : Équilibre d’un solide soumis à deux forces", desc: "Conditions d'équilibre d'un solide.", pdf: false, vid: false };
+
+        const c1_1 = { id: "1c1", title: "Chapitre 1 : Les états physiques de la matière", desc: "États physiques de la matière.", pdf: false, vid: false };
+        const c1_2 = { id: "1c2", title: "Chapitre 2 : Les corps purs et les mélanges", desc: "Corps purs et mélanges.", pdf: false, vid: false };
+        const c1_3 = { id: "1c3", title: "Chapitre 3 : Les solutions aqueuses (Dissolution, concentration massive, solubilité)", desc: "Dissolution, concentration massive et solubilité.", pdf: false, vid: false };
+        const c1_4 = { id: "1c4", title: "Chapitre 4 : Le modèle atomique (Atomes, molécules et symboles chimiques)", desc: "Atomes, molécules et symboles chimiques.", pdf: false, vid: false };
+
+        // --- 2ème Année Secondaire ---
+        const p2_1 = { id: "2p1", title: "Chapitre 1 : Mouvement rectiligne (Uniforme et uniformément varié)", desc: "Mouvement rectiligne uniforme et uniformément varié.", pdf: false, vid: false };
+        const p2_2 = { id: "2p2", title: "Chapitre 2 : Le Principe d’inertie (1ère loi de Newton)", desc: "Première loi de Newton.", pdf: false, vid: false };
+        const p2_3 = { id: "2p3", title: "Chapitre 3 : Équilibre d’un solide soumis à trois forces non parallèles", desc: "Équilibre d'un solide soumis à trois forces.", pdf: false, vid: false };
+        const p2_4 = { id: "2p4", title: "Chapitre 4 : Le courant électrique alternatif (Caractéristiques et utilisation de l'oscilloscope)", desc: "Courant alternatif et oscilloscope.", pdf: false, vid: false };
+        const p2_5 = { id: "2p5", title: "Chapitre 5 : Réflexion et Réfraction de la lumière (Lois de Snell-Descartes)", desc: "Lois de Snell-Descartes.", pdf: false, vid: false };
+
+        const c2_1 = { id: "2c1", title: "Chapitre 1 : Constitution de l'atome (Noyau, électrons, configuration électronique)", desc: "Noyau, électrons et configuration électronique.", pdf: false, vid: false };
+        const c2_2 = { id: "2c2", title: "Chapitre 2 : La classification périodique des éléments chimiques", desc: "Classification périodique des éléments.", pdf: false, vid: false };
+        const c2_3 = { id: "2c3", title: "Chapitre 3 : La liaison chimique (Modèle de Lewis et formation des ions)", desc: "Modèle de Lewis et formation des ions.", pdf: false, vid: false };
+        const c2_4 = { id: "2c4", title: "Chapitre 4 : La réaction chimique (Mole, masse molaire et lois de conservation)", desc: "Mole, masse molaire et lois de conservation.", pdf: false, vid: false };
+
+        // --- 3ème Année Secondaire ---
+        const p3_1 = { id: "3p1", title: "Chapitre 1 : Cinématique du point matériel (Vecteurs position, vitesse et accélération)", desc: "Vecteurs position, vitesse et accélération.", pdf: false, vid: false };
+        const p3_2 = { id: "3p2", title: "Chapitre 2 : Loi Fondamentale de la Dynamique (2ème loi de Newton)", desc: "Deuxième loi de Newton.", pdf: false, vid: false };
+        const p3_3 = { id: "3p3", title: "Chapitre 3 : Travail et puissance d'une force", desc: "Travail et puissance d'une force.", pdf: false, vid: false };
+        const p3_4 = { id: "3p4", title: "Chapitre 4 : Énergie cinétique et Théorème de l’énergie cinétique", desc: "Énergie cinétique et théorème.", pdf: false, vid: false };
+        const p3_5 = { id: "3p5", title: "Chapitre 5 : Énergie potentielle de pesanteur et Énergie mécanique", desc: "Énergie potentielle et mécanique.", pdf: false, vid: false };
+        const p3_6 = { id: "3p6", title: "Chapitre 6 : Le Condensateur et le circuit dipolaire RC", desc: "Condensateur et circuit RC.", pdf: false, vid: false };
+        const p3_7 = { id: "3p7", title: "Chapitre 7 : La Bobine et le circuit dipolaire RL", desc: "Bobine et circuit RL.", pdf: false, vid: false };
+
+        const c3_1 = { id: "3c1", title: "Chapitre 1 : Masse, volume et quantité de matière (Masse molaire volumique, volume molaire)", desc: "Masse molaire volumique et volume molaire.", pdf: false, vid: false };
+        const c3_2 = { id: "3c2", title: "Chapitre 2 : Les solutions aqueuses électrolytiques (Conductance et conductivité)", desc: "Conductance et conductivité.", pdf: false, vid: false };
+        const c3_3 = { id: "3c3", title: "Chapitre 3 : Avancement d'une réaction chimique (Tableau d'avancement, réactif limitant)", desc: "Tableau d'avancement et réactif limitant.", pdf: false, vid: false };
+        const c3_4 = { id: "3c4", title: "Chapitre 4 : Introduction à la chimie organique (Structure et nomenclature des Alcanes et Alcènes)", desc: "Alcanes et Alcènes.", pdf: false, vid: false };
+        const c3_5 = { id: "3c5", title: "Chapitre 5 : Les alcools (Propriétés et nomenclature)", desc: "Propriétés et nomenclature des alcools.", pdf: false, vid: false };
+
+        // --- 4ème Année Secondaire / Bac ---
+        const p4_1 = { id: "4p1", title: "Chapitre 1 : Oscillations mécaniques libres (Pendule élastique non amorti et amorti)", desc: "Pendule élastique non amorti et amorti.", pdf: false, vid: false };
+        const p4_2 = { id: "4p2", title: "Chapitre 2 : Oscillations électriques libres (Circuit LC et circuit RLC)", desc: "Circuit LC et circuit RLC.", pdf: false, vid: false };
+        const p4_3 = { id: "4p3", title: "Chapitre 3 : Oscillations électriques forcées en régime sinusoïdal (Phénomène de résonance d'intensité)", desc: "Résonance d'intensité.", pdf: false, vid: false };
+        const p4_4 = { id: "4p4", title: "Chapitre 4 : Oscillations mécaniques forcées (Résonance mécanique)", desc: "Résonance mécanique.", pdf: false, vid: false };
+        const p4_5 = { id: "4p5", title: "Chapitre 5 : Les Ondes mécaniques progressives (Propagation le long d'une corde et à la surface de l'eau)", desc: "Ondes le long d'une corde et à la surface de l'eau.", pdf: false, vid: false };
+        const p4_6 = { id: "4p6", title: "Chapitre 6 : Les Ondes sonores et ultrasonores", desc: "Ondes sonores et ultrasonores.", pdf: false, vid: false };
+        const p4_7 = { id: "4p7", title: "Chapitre 7 : Physique Nucléaire : La radioactivité (α, β⁻, β⁺, γ) et loi de décroissance", desc: "Radioactivité et loi de décroissance.", pdf: false, vid: false };
+        const p4_8 = { id: "4p8", title: "Chapitre 8 : Énergie nucléaire (Défaut de masse, énergie de liaison, fission et fusion)", desc: "Défaut de masse, énergie de liaison, fission et fusion.", pdf: false, vid: false };
+        const p4_9 = { id: "4p9", title: "Chapitre 9 : Physique Atomique : Spectre de l'atome d'hydrogène et les photons (Uniquement pour les sections Maths et Sciences Exp.)", desc: "Spectre de l'atome d'hydrogène et photons.", pdf: false, vid: false };
+
+        const c4_1 = { id: "4c1", title: "Chapitre 1 : Cinétique chimique (Réactions lentes/rapides, facteurs cinétiques)", desc: "Réactions lentes/rapides et facteurs cinétiques.", pdf: false, vid: false };
+        const c4_2 = { id: "4c2", title: "Chapitre 2 : Vitesse de réaction et suivi temporel d'une transformation", desc: "Vitesse de réaction et suivi temporel.", pdf: false, vid: false };
+        const c4_3 = { id: "4c3", title: "Chapitre 3 : Équilibre dynamique et avancement final d'une réaction réversible", desc: "Équilibre dynamique et avancement final.", pdf: false, vid: false };
+        const c4_4 = { id: "4c4", title: "Chapitre 4 : Constante d'équilibre K et Quotient de réaction π (Loi d'action de masse)", desc: "Constante K et quotient de réaction.", pdf: false, vid: false };
+        const c4_5 = { id: "4c5", title: "Chapitre 5 : Les facteurs d'équilibre (Loi de modération de Le Chatelier)", desc: "Loi de modération de Le Chatelier.", pdf: false, vid: false };
+        const c4_6 = { id: "4c6", title: "Chapitre 6 : Les acides et les bases de Brönsted (Définitions et produit ionique de l'eau)", desc: "Acides, bases de Brönsted et produit ionique.", pdf: false, vid: false };
+        const c4_7 = { id: "4c7", title: "Chapitre 7 : pH des solutions aqueuses (Acides/bases forts et faibles)", desc: "pH des solutions acides/bases.", pdf: false, vid: false };
+        const c4_8 = { id: "4c8", title: "Chapitre 8 : Les réactions de dosage (Titrages acido-basiques pH-métriques et colorimétriques)", desc: "Titrages acido-basiques.", pdf: false, vid: false };
+
+        // Master curriculum data structure
+        const curriculumData = {
+            "1ere": {
+                levelName: "1ère Année Secondaire",
+                sections: {
+                    "Tronc Commun": {
+                        physique: [p1_1, p1_2, p1_3, p1_4, p1_5],
+                        chimie: [c1_1, c1_2, c1_3, c1_4]
+                    }
+                }
+            },
+            "2eme": {
+                levelName: "2ème Année Secondaire",
+                sections: {
+                    "Sciences": { physique: [p2_1, p2_2, p2_3, p2_4, p2_5], chimie: [c2_1, c2_2, c2_3, c2_4] },
+                    "Technologie": { physique: [p2_1, p2_2, p2_3, p2_4, p2_5], chimie: [c2_1, c2_2, c2_3, c2_4] },
+                    "Économie et Services": { physique: [p2_1, p2_2, p2_3, p2_4, p2_5], chimie: [c2_1, c2_2, c2_3, c2_4] },
+                    "Lettres": { physique: [p2_1, p2_2, p2_3, p2_4, p2_5], chimie: [c2_1, c2_2, c2_3, c2_4] }
+                }
+            },
+            "3eme": {
+                levelName: "3ème Année Secondaire",
+                sections: {
+                    "Mathématiques": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] },
+                    "Sciences Expérimentales": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] },
+                    "Sciences Techniques": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] },
+                    "Sciences de l'Informatique": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] },
+                    "Économie et Gestion": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] },
+                    "Lettres": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] },
+                    "Sport": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] }
+                }
+            },
+            "bac": {
+                levelName: "Baccalauréat",
+                sections: {
+                    "Bac Mathématiques": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8, p4_9], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] },
+                    "Bac Sciences Expérimentales": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8, p4_9], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] },
+                    "Bac Sciences Techniques": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] },
+                    "Bac Sciences de l'Informatique": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] },
+                    "Bac Économie et Gestion": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] },
+                    "Bac Lettres": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] },
+                    "Bac Sport": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] }
+                }
+            }
+        };
+
+        let currentLevelKey = "bac";
+        let currentSectionKey = "Bac Mathématiques";
+        let userDataStore = JSON.parse(JSON.stringify(curriculumData)); // Deep copy for mutable progress tracking
+
+        // Gestion du basculement Connexion / Inscription
+        function switchAuthMode(mode) {
+            const loginBtn = document.getElementById('tabLoginBtn');
+            const signupBtn = document.getElementById('tabSignupBtn');
+            const loginPanel = document.getElementById('loginPanel');
+            const signupPanel = document.getElementById('signupPanel');
+
+            if (mode === 'login') {
+                loginBtn.classList.add('active');
+                signupBtn.classList.remove('active');
+                loginPanel.classList.add('active');
+                signupPanel.classList.remove('active');
+            } else {
+                signupBtn.classList.add('active');
+                loginBtn.classList.remove('active');
+                signupPanel.classList.add('active');
+                loginPanel.classList.remove('active');
+                // Initialiser les sections pour l'inscription si nécessaire
+                handleLevelChange(document.getElementById('student-level').value);
+            }
+        }
+
+        // Handle Fluid Expansion on Level Selection (with 1ère année Tronc Commun exclusion)
+        function handleLevelChange(levelKey) {
+            const sectionGroup = document.getElementById('sectionExpandableGroup');
+            const sectionSelect = document.getElementById('student-section');
+            
+            if (!sectionSelect) return;
+            sectionSelect.innerHTML = '';
+
+            if (levelKey === '1ere') {
+                const opt = document.createElement('option');
+                opt.value = "Tronc Commun";
+                opt.textContent = "Tronc Commun";
+                sectionSelect.appendChild(opt);
+                if(sectionGroup) sectionGroup.classList.remove('expanded');
+                return;
+            }
+
+            if (levelKey && curriculumData[levelKey]) {
+                const sectionsObj = curriculumData[levelKey].sections;
+                const sectionNames = Object.keys(sectionsObj);
+
+                sectionNames.forEach(secName => {
+                    const opt = document.createElement('option');
+                    opt.value = secName;
+                    opt.textContent = secName;
+                    sectionSelect.appendChild(opt);
+                });
+
+                if(sectionGroup) sectionGroup.classList.add('expanded');
+            } else {
+                if(sectionGroup) sectionGroup.classList.remove('expanded');
+            }
+        }
+
+        function toggleDrawer() {
+            document.getElementById('navDrawer').classList.toggle('open');
+            document.getElementById('drawerOverlay').classList.toggle('active');
+        }
+
+        function showHub() {
+            document.getElementById('hubView').classList.remove('hidden');
+            document.getElementById('physiqueView').classList.remove('active');
+            document.getElementById('chimieView').classList.remove('active');
+            window.scrollTo({ top: 150, behavior: 'smooth' });
+        }
+
+        function showSubjectPage(subject) {
+            document.getElementById('hubView').classList.add('hidden');
+            const physView = document.getElementById('physiqueView');
+            const chimView = document.getElementById('chimieView');
+
+            if (subject === 'physique') {
+                physView.classList.add('active');
+                chimView.classList.remove('active');
+                renderLessons('physique');
+            } else {
+                chimView.classList.add('active');
+                physView.classList.remove('active');
+                renderLessons('chimie');
+            }
+            window.scrollTo({ top: 150, behavior: 'smooth' });
+        }
+
+        // Fonction unifiée pour gérer l'authentification avec Supabase
+        async function handleAuth(event, type) {
+            event.preventDefault();
+            
+            const email = document.getElementById(type === 'login' ? 'login-email' : 'signup-email').value;
+            const password = document.getElementById(type === 'login' ? 'login-password' : 'signup-password').value;
+
+            if (type === 'signup') {
+                const name = document.getElementById('signup-name').value;
+                currentLevelKey = document.getElementById('student-level').value;
+                currentSectionKey = document.getElementById('student-section').value || "Tronc Commun";
+
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            full_name: name,
+                            level: currentLevelKey,
+                            section: currentSectionKey
+                        }
+                    }
+                });
+
+                if (error) {
+                    alert("Erreur d'inscription : " + error.message);
+                    return;
+                }
+                alert("Compte créé avec succès ! Tu peux te connecter.");
+                switchAuthMode('login');
+                
+            } else {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) {
+                    alert("Erreur de connexion : " + error.message);
+                    return;
+                }
+
+                const user = data.user;
+                const fullName = user.user_metadata?.full_name || email.split('@')[0];
+                currentLevelKey = user.user_metadata?.level || "bac";
+                currentSectionKey = user.user_metadata?.section || "Bac Mathématiques";
+
+                const levelNameText = currentLevelKey === '1ere' ? curriculumData[currentLevelKey].levelName : `${curriculumData[currentLevelKey].levelName} — ${currentSectionKey}`;
+
+                document.getElementById('displayUserName').textContent = fullName;
+                document.getElementById('displayUserLevel').textContent = levelNameText;
+                document.getElementById('welcomeGreeting').textContent = `Bienvenue, ${fullName} !`;
+                document.getElementById('welcomeLevelInfo').textContent = `Filière active : ${levelNameText}.`;
+                
+                document.querySelectorAll('.levelNameDisplay').forEach(el => el.textContent = levelNameText);
+                
+                const activeSecData = userDataStore[currentLevelKey].sections[currentSectionKey] || userDataStore[currentLevelKey].sections[Object.keys(userDataStore[currentLevelKey].sections)[0]];
+                document.getElementById('badgePhysiqueCount').textContent = `${activeSecData.physique.length} Chapitres`;
+                document.getElementById('badgeChimieCount').textContent = `${activeSecData.chimie.length} Chapitres`;
+
+                const authScreen = document.getElementById('auth-screen');
+                const mainDashboard = document.getElementById('main-dashboard');
+
+                authScreen.style.opacity = '0';
+                setTimeout(() => {
+                    authScreen.style.display = 'none';
+                    mainDashboard.classList.add('active');
+                    window.scrollTo(0, 0);
+                }, 500);
+            }
+        }
+
+        async function triggerLogout() {
+            await supabaseClient.auth.signOut();
+            toggleDrawer();
+            showHub();
+            const authScreen = document.getElementById('auth-screen');
+            const mainDashboard = document.getElementById('main-dashboard');
+
+            mainDashboard.classList.remove('active');
+            authScreen.style.display = 'flex';
+            setTimeout(() => { authScreen.style.opacity = '1'; }, 50);
+
+            // Réinitialiser les champs
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('signup-email').value = '';
+            document.getElementById('signup-password').value = '';
+            document.getElementById('signup-name').value = '';
+            document.getElementById('student-level').selectedIndex = 0;
+            const secGroup = document.getElementById('sectionExpandableGroup');
+            if(secGroup) secGroup.classList.remove('expanded');
+        }
+
+        function renderLessons(subject) {
+            const containerId = subject === 'physique' ? 'physiqueLessonsContainer' : 'chimieLessonsContainer';
+            const container = document.getElementById(containerId);
+            const sectionData = userDataStore[currentLevelKey].sections[currentSectionKey];
+            if (!sectionData) return;
+            const lessonsList = sectionData[subject];
+
+            container.innerHTML = '';
+
+            lessonsList.forEach(lesson => {
+                let score = 0;
+                if (lesson.pdf) score += 50;
+                if (lesson.vid) score += 50;
+
+                const pdfClass = lesson.pdf ? 'completed' : '';
+                const pdfText = lesson.pdf ? '📄 PDF Consulté (50%)' : '📥 Consulter le PDF';
+                const vidClass = lesson.vid ? 'completed' : '';
+                const vidText = lesson.vid ? '▶ Vidéo Visionnée (50%)' : '▶ Regarder la Vidéo';
+
+                const cardHTML = `
+                    <div class="lesson-card">
+                        <div class="lesson-top">
+                            <h4>${lesson.title}</h4>
+                            <p>${lesson.desc}</p>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-info">
+                                <span>Maîtrise automatique</span>
+                                <span id="progVal-${lesson.id}">${score} / 100</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" id="progBar-${lesson.id}" style="width: ${score}%;"></div>
+                            </div>
+                        </div>
+                        <div class="lesson-footer">
+                            <button onclick="toggleResource('${subject}', '${lesson.id}', 'pdf')" class="btn-action btn-pdf ${pdfClass}" id="btnPdf-${lesson.id}">${pdfText}</button>
+                            <button onclick="toggleResource('${subject}', '${lesson.id}', 'vid')" class="btn-action btn-vid ${vidClass}" id="btnVid-${lesson.id}">${vidText}</button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHTML;
+            });
+        }
+
+        function toggleResource(subject, lessonId, type) {
+            const lessonsList = userDataStore[currentLevelKey].sections[currentSectionKey][subject];
+            const lesson = lessonsList.find(l => l.id === lessonId);
+
+            if (type === 'pdf') {
+                lesson.pdf = !lesson.pdf;
+            } else if (type === 'vid') {
+                lesson.vid = !lesson.vid;
+            }
+
+            let score = 0;
+            if (lesson.pdf) score += 50;
+            if (lesson.vid) score += 50;
+
+            document.getElementById(`progVal-${lessonId}`).textContent = `${score} / 100`;
+            document.getElementById(`progBar-${lessonId}`).style.width = `${score}%`;
+
+            const pdfBtn = document.getElementById(`btnPdf-${lessonId}`);
+            const vidBtn = document.getElementById(`btnVid-${lessonId}`);
+
+            if (lesson.pdf) {
+                pdfBtn.classList.add('completed');
+                pdfBtn.textContent = '📄 PDF Consulté (50%)';
+            } else {
+                pdfBtn.classList.remove('completed');
+                pdfBtn.textContent = '📥 Consulter le PDF';
+            }
+
+            if (lesson.vid) {
+                vidBtn.classList.add('completed');
+                vidBtn.textContent = '▶ Vidéo Visionnée (50%)';
+            } else {
+                vidBtn.classList.remove('completed');
+                vidBtn.textContent = '▶ Regarder la Vidéo';
+            }
+        }
+    </script>
+</body>
+</html>
