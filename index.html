@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Zaidi Academy - Orientation & Suivi Pédagogique</title>
+    <title>Zaidi Academy - Orientation & Suivi Pédagogique</title>
     <!-- Chargement de la bibliothèque Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -83,7 +83,6 @@
             margin-bottom: 20px;
         }
 
-        /* Switcher pour Login / Signup */
         .auth-switcher {
             display: flex;
             background: rgba(255, 255, 255, 0.05);
@@ -158,7 +157,6 @@
             color: var(--text-white);
         }
 
-        /* Fluid expansion container for orientation/section */
         .expandable-section {
             max-height: 0;
             opacity: 0;
@@ -351,7 +349,6 @@
             color: var(--orange-primary);
         }
 
-        /* Improved clean user pill container */
         .user-pill {
             background: #f1f5f9;
             padding: 8px 16px;
@@ -435,18 +432,19 @@
             margin: 0;
         }
 
-        /* --- 6. HUB & SUBJECT CARDS --- */
+        /* --- 6. HUBS & SUB-HUBS --- */
         .container {
             max-width: 1100px;
             margin: 40px auto;
             padding: 0 5%;
         }
 
-        .hub-view {
-            display: block;
-        }
-        .hub-view.hidden {
+        .view-section {
             display: none;
+        }
+        .view-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
         }
 
         .hub-title {
@@ -469,6 +467,15 @@
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 30px;
             max-width: 850px;
+            margin: 0 auto;
+        }
+
+        /* Grille pour les 4 sous-parties (Cours, Exercices, Séries, Devoirs) */
+        .sub-categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
@@ -548,16 +555,7 @@
             font-weight: 700;
         }
 
-        /* --- 7. LESSONS VIEWS --- */
-        .subject-page-view {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .subject-page-view.active {
-            display: block;
-        }
-
+        /* --- 7. LESSONS & CONTENT VIEWS --- */
         .back-nav {
             display: flex;
             align-items: center;
@@ -741,7 +739,7 @@
 </head>
 <body>
 
-    <!-- PROFESSIONAL AUTH SCREEN WITH TABS (LOGIN / SIGNUP) -->
+    <!-- AUTH SCREEN -->
     <div id="auth-screen">
         <div class="auth-container">
             <div class="auth-logo">Zaidi<span>Academy</span></div>
@@ -752,7 +750,7 @@
                 <button type="button" class="switcher-btn" id="tabSignupBtn" onclick="switchAuthMode('signup')">S'inscrire</button>
             </div>
 
-            <!-- Formulaire de Connexion -->
+            <!-- Connexion -->
             <div class="auth-form-panel active" id="loginPanel">
                 <form onsubmit="handleAuth(event, 'login')">
                     <div class="input-group">
@@ -767,7 +765,7 @@
                 </form>
             </div>
 
-            <!-- Formulaire d'Inscription -->
+            <!-- Inscription -->
             <div class="auth-form-panel" id="signupPanel">
                 <form onsubmit="handleAuth(event, 'signup')">
                     <div class="input-group">
@@ -796,12 +794,9 @@
                         </select>
                     </div>
 
-                    <!-- Fluid Expansion Section Selector -->
                     <div class="input-group expandable-section" id="sectionExpandableGroup">
                         <label for="student-section">Filière / Section Spécifique</label>
-                        <select id="student-section">
-                            <!-- Dynamically populated via JS -->
-                        </select>
+                        <select id="student-section"></select>
                     </div>
 
                     <button type="submit" class="btn-custom">Créer mon compte</button>
@@ -819,8 +814,8 @@
         <div class="drawer-header">Menu Principal</div>
         <ul class="drawer-links">
             <li><a href="#" onclick="toggleDrawer(); showHub();"><span>Accueil / Choix Matières</span> ➔</a></li>
-            <li><a href="#" onclick="toggleDrawer(); showSubjectPage('physique');"><span>Partie Physique</span> ➔</a></li>
-            <li><a href="#" onclick="toggleDrawer(); showSubjectPage('chimie');"><span>Partie Chimie</span> ➔</a></li>
+            <li><a href="#" onclick="toggleDrawer(); openSubjectHub('physique');"><span>Partie Physique</span> ➔</a></li>
+            <li><a href="#" onclick="toggleDrawer(); openSubjectHub('chimie');"><span>Partie Chimie</span> ➔</a></li>
         </ul>
         <a class="drawer-logout" onclick="triggerLogout()">Déconnexion</a>
     </div>
@@ -839,7 +834,7 @@
 
         <section class="hero" id="accueil">
             <h1>Plateforme Nationale de <span>Physique & Chimie</span></h1>
-            <p>Sélectionnez une matière pour étudier les chapitres officiels de votre filière. Votre progression s'actualise automatiquement en consultant les cours et vidéos.</p>
+            <p>Accédez aux Cours, Exercices, Séries et Devoirs adaptés à votre filière officielle tunisienne.</p>
             
             <div class="welcome-card">
                 <div class="welcome-info">
@@ -851,44 +846,74 @@
         </section>
 
         <div class="container">
-            <!-- VIEW 1: SUBJECT HUB -->
-            <div class="hub-view" id="hubView">
+            <!-- VIEW 1: SUBJECT HUB (Physics or Chemistry choice) -->
+            <div class="view-section active" id="hubView">
                 <h2 class="hub-title">Choisissez votre matière</h2>
-                <p class="hub-subtitle">Cliquez sur une icône pour afficher les leçons adaptées à votre filière.</p>
+                <p class="hub-subtitle">Cliquez sur une matière pour explorer les cours, exercices, séries et devoirs.</p>
                 
                 <div class="subjects-grid">
-                    <div class="subject-card-big" onclick="showSubjectPage('physique')">
+                    <div class="subject-card-big" onclick="openSubjectHub('physique')">
                         <div class="subject-icon">⚙️</div>
                         <h3>Physique</h3>
-                        <p>Cours, résumés, exercices et suivis automatiques de progression.</p>
+                        <p>Cours, résumés, exercices, séries et devoirs corrigés.</p>
                         <span class="subject-badge" id="badgePhysiqueCount">Chapitres officiels</span>
                     </div>
 
-                    <div class="subject-card-big" onclick="showSubjectPage('chimie')">
+                    <div class="subject-card-big" onclick="openSubjectHub('chimie')">
                         <div class="subject-icon">🧪</div>
                         <h3>Chimie</h3>
-                        <p>Réactions, équilibres, transformations et suivis automatiques.</p>
+                        <p>Réactions, équilibres, exercices, séries et devoirs.</p>
                         <span class="subject-badge" id="badgeChimieCount">Chapitres officiels</span>
                     </div>
                 </div>
             </div>
 
-            <!-- VIEW 2: PHYSIQUE LESSONS -->
-            <div class="subject-page-view" id="physiqueView">
+            <!-- VIEW 2: SUBJECT SUB-HUB (The 4 options: Cours, Exercices, Séries, Devoirs) -->
+            <div class="view-section" id="subjectSubHubView">
                 <div class="back-nav">
-                    <h2 class="page-header-title">⚙️ Espace Physique (<span class="levelNameDisplay"></span>)</h2>
+                    <h2 class="page-header-title" id="subHubTitle">⚙️ Espace Matière</h2>
                     <button class="btn-back" onclick="showHub()">← Retour aux matières</button>
                 </div>
-                <div class="lessons-grid" id="physiqueLessonsContainer"></div>
+                <p class="hub-subtitle">Sélectionnez la catégorie de ressources que vous souhaitez consulter :</p>
+                
+                <div class="sub-categories-grid">
+                    <div class="subject-card-big" onclick="selectCategory('cours')">
+                        <div class="subject-icon">📚</div>
+                        <h3>Cours</h3>
+                        <p>Leçons détaillées et résumés officiels de cours.</p>
+                        <span class="subject-badge">Consulter</span>
+                    </div>
+
+                    <div class="subject-card-big" onclick="selectCategory('exercices')">
+                        <div class="subject-icon">✍️</div>
+                        <h3>Exercices</h3>
+                        <p>Exercices d'application directe et méthodes.</p>
+                        <span class="subject-badge">S'entraîner</span>
+                    </div>
+
+                    <div class="subject-card-big" onclick="selectCategory('series')">
+                        <div class="subject-icon">📑</div>
+                        <h3>Séries</h3>
+                        <p>Séries d'exercices progressifs et approfondis.</p>
+                        <span class="subject-badge">Pratiquer</span>
+                    </div>
+
+                    <div class="subject-card-big" onclick="selectCategory('devoirs')">
+                        <div class="subject-icon">📝</div>
+                        <h3>Devoirs</h3>
+                        <p>Devoirs de contrôle, de synthèse et examens.</p>
+                        <span class="subject-badge">Évaluer</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- VIEW 3: CHIMIE LESSONS -->
-            <div class="subject-page-view" id="chimieView">
+            <!-- VIEW 3: LESSONS & CONTENT LIST VIEW -->
+            <div class="view-section" id="lessonsListView">
                 <div class="back-nav">
-                    <h2 class="page-header-title">🧪 Espace Chimie (<span class="levelNameDisplay"></span>)</h2>
-                    <button class="btn-back" onclick="showHub()">← Retour aux matières</button>
+                    <h2 class="page-header-title" id="lessonsListHeaderTitle">⚙️ Chapitres</h2>
+                    <button class="btn-back" onclick="backToSubHub()">← Retour aux catégories</button>
                 </div>
-                <div class="lessons-grid" id="chimieLessonsContainer"></div>
+                <div class="lessons-grid" id="lessonsContainer"></div>
             </div>
         </div>
 
@@ -898,71 +923,66 @@
     </div>
 
     <script>
-        // Initialisation de Supabase
         const SUPABASE_URL = 'https://xylfczypeidakbzpaeti.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5bGZjenlwZWlkYWtienBhZXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTA2OTMsImV4cCI6MjEwNDM2NjY5M30.e7KrZLpPdl-irVhsZYTHIG9Ht1YQ0OWdOT3MCBBiJg0'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // --- 1ère Année Secondaire ---
-        const p1_1 = { id: "1p1", title: "Chapitre 1 : Le courant électrique continu (Intensité et tension)", desc: "Intensité du courant et tension électrique.", pdf: false, vid: false };
-        const p1_2 = { id: "1p2", title: "Chapitre 2 : Les circuits électriques (Lois des intensités et des tensions)", desc: "Lois d'unicité et d'additivité.", pdf: false, vid: false };
-        const p1_3 = { id: "1p3", title: "Chapitre 3 : Propagation rectiligne de la lumière (Sources, récepteurs, ombres)", desc: "Sources de lumière, récepteurs et ombres.", pdf: false, vid: false };
-        const p1_4 = { id: "1p4", title: "Chapitre 4 : Notion de force et ses caractéristiques", desc: "Caractéristiques et actions mécaniques.", pdf: false, vid: false };
-        const p1_5 = { id: "1p5", title: "Chapitre 5 : Équilibre d’un solide soumis à deux forces", desc: "Conditions d'équilibre d'un solide.", pdf: false, vid: false };
+        // Données des chapitres de base
+        const p1_1 = { id: "1p1", title: "Chapitre 1 : Le courant électrique continu", desc: "Intensité du courant et tension électrique." };
+        const p1_2 = { id: "1p2", title: "Chapitre 2 : Les circuits électriques", desc: "Lois d'unicité et d'additivité." };
+        const p1_3 = { id: "1p3", title: "Chapitre 3 : Propagation rectiligne de la lumière", desc: "Sources de lumière, récepteurs et ombres." };
+        const p1_4 = { id: "1p4", title: "Chapitre 4 : Notion de force et caractéristiques", desc: "Caractéristiques et actions mécaniques." };
+        const p1_5 = { id: "1p5", title: "Chapitre 5 : Équilibre d’un solide soumis à deux forces", desc: "Conditions d'équilibre d'un solide." };
 
-        const c1_1 = { id: "1c1", title: "Chapitre 1 : Les états physiques de la matière", desc: "États physiques de la matière.", pdf: false, vid: false };
-        const c1_2 = { id: "1c2", title: "Chapitre 2 : Les corps purs et les mélanges", desc: "Corps purs et mélanges.", pdf: false, vid: false };
-        const c1_3 = { id: "1c3", title: "Chapitre 3 : Les solutions aqueuses (Dissolution, concentration massive, solubilité)", desc: "Dissolution, concentration massive et solubilité.", pdf: false, vid: false };
-        const c1_4 = { id: "1c4", title: "Chapitre 4 : Le modèle atomique (Atomes, molécules et symboles chimiques)", desc: "Atomes, molécules et symboles chimiques.", pdf: false, vid: false };
+        const c1_1 = { id: "1c1", title: "Chapitre 1 : Les états physiques de la matière", desc: "États physiques de la matière." };
+        const c1_2 = { id: "1c2", title: "Chapitre 2 : Les corps purs et les mélanges", desc: "Corps purs et mélanges." };
+        const c1_3 = { id: "1c3", title: "Chapitre 3 : Les solutions aqueuses", desc: "Dissolution, concentration massive et solubilité." };
+        const c1_4 = { id: "1c4", title: "Chapitre 4 : Le modèle atomique", desc: "Atomes, molécules et symboles chimiques." };
 
-        // --- 2ème Année Secondaire ---
-        const p2_1 = { id: "2p1", title: "Chapitre 1 : Mouvement rectiligne (Uniforme et uniformément varié)", desc: "Mouvement rectiligne uniforme et uniformément varié.", pdf: false, vid: false };
-        const p2_2 = { id: "2p2", title: "Chapitre 2 : Le Principe d’inertie (1ère loi de Newton)", desc: "Première loi de Newton.", pdf: false, vid: false };
-        const p2_3 = { id: "2p3", title: "Chapitre 3 : Équilibre d’un solide soumis à trois forces non parallèles", desc: "Équilibre d'un solide soumis à trois forces.", pdf: false, vid: false };
-        const p2_4 = { id: "2p4", title: "Chapitre 4 : Le courant électrique alternatif (Caractéristiques et utilisation de l'oscilloscope)", desc: "Courant alternatif et oscilloscope.", pdf: false, vid: false };
-        const p2_5 = { id: "2p5", title: "Chapitre 5 : Réflexion et Réfraction de la lumière (Lois de Snell-Descartes)", desc: "Lois de Snell-Descartes.", pdf: false, vid: false };
+        const p2_1 = { id: "2p1", title: "Chapitre 1 : Mouvement rectiligne", desc: "Uniforme et uniformément varié." };
+        const p2_2 = { id: "2p2", title: "Chapitre 2 : Le Principe d’inertie", desc: "Première loi de Newton." };
+        const p2_3 = { id: "2p3", title: "Chapitre 3 : Équilibre d’un solide", desc: "Soumis à trois forces non parallèles." };
+        const p2_4 = { id: "2p4", title: "Chapitre 4 : Le courant électrique alternatif", desc: "Caractéristiques et utilisation de l'oscilloscope." };
+        const p2_5 = { id: "2p5", title: "Chapitre 5 : Réflexion et Réfraction", desc: "Lois de Snell-Descartes." };
 
-        const c2_1 = { id: "2c1", title: "Chapitre 1 : Constitution de l'atome (Noyau, électrons, configuration électronique)", desc: "Noyau, électrons et configuration électronique.", pdf: false, vid: false };
-        const c2_2 = { id: "2c2", title: "Chapitre 2 : La classification périodique des éléments chimiques", desc: "Classification périodique des éléments.", pdf: false, vid: false };
-        const c2_3 = { id: "2c3", title: "Chapitre 3 : La liaison chimique (Modèle de Lewis et formation des ions)", desc: "Modèle de Lewis et formation des ions.", pdf: false, vid: false };
-        const c2_4 = { id: "2c4", title: "Chapitre 4 : La réaction chimique (Mole, masse molaire et lois de conservation)", desc: "Mole, masse molaire et lois de conservation.", pdf: false, vid: false };
+        const c2_1 = { id: "2c1", title: "Chapitre 1 : Constitution de l'atome", desc: "Noyau, électrons, configuration électronique." };
+        const c2_2 = { id: "2c2", title: "Chapitre 2 : La classification périodique", desc: "Classification périodique des éléments." };
+        const c2_3 = { id: "2c3", title: "Chapitre 3 : La liaison chimique", desc: "Modèle de Lewis et formation des ions." };
+        const c2_4 = { id: "2c4", title: "Chapitre 4 : La réaction chimique", desc: "Mole, masse molaire et lois de conservation." };
 
-        // --- 3ème Année Secondaire ---
-        const p3_1 = { id: "3p1", title: "Chapitre 1 : Cinématique du point matériel (Vecteurs position, vitesse et accélération)", desc: "Vecteurs position, vitesse et accélération.", pdf: false, vid: false };
-        const p3_2 = { id: "3p2", title: "Chapitre 2 : Loi Fondamentale de la Dynamique (2ème loi de Newton)", desc: "Deuxième loi de Newton.", pdf: false, vid: false };
-        const p3_3 = { id: "3p3", title: "Chapitre 3 : Travail et puissance d'une force", desc: "Travail et puissance d'une force.", pdf: false, vid: false };
-        const p3_4 = { id: "3p4", title: "Chapitre 4 : Énergie cinétique et Théorème de l’énergie cinétique", desc: "Énergie cinétique et théorème.", pdf: false, vid: false };
-        const p3_5 = { id: "3p5", title: "Chapitre 5 : Énergie potentielle de pesanteur et Énergie mécanique", desc: "Énergie potentielle et mécanique.", pdf: false, vid: false };
-        const p3_6 = { id: "3p6", title: "Chapitre 6 : Le Condensateur et le circuit dipolaire RC", desc: "Condensateur et circuit RC.", pdf: false, vid: false };
-        const p3_7 = { id: "3p7", title: "Chapitre 7 : La Bobine et le circuit dipolaire RL", desc: "Bobine et circuit RL.", pdf: false, vid: false };
+        const p3_1 = { id: "3p1", title: "Chapitre 1 : Cinématique du point matériel", desc: "Vecteurs position, vitesse et accélération." };
+        const p3_2 = { id: "3p2", title: "Chapitre 2 : Loi Fondamentale de la Dynamique", desc: "Deuxième loi de Newton." };
+        const p3_3 = { id: "3p3", title: "Chapitre 3 : Travail et puissance d'une force", desc: "Calcul du travail et puissance." };
+        const p3_4 = { id: "3p4", title: "Chapitre 4 : Énergie cinétique", desc: "Théorème de l’énergie cinétique." };
+        const p3_5 = { id: "3p5", title: "Chapitre 5 : Énergie potentielle & mécanique", desc: "Conservation et non conservation." };
+        const p3_6 = { id: "3p6", title: "Chapitre 6 : Le Condensateur", desc: "Circuit dipolaire RC." };
+        const p3_7 = { id: "3p7", title: "Chapitre 7 : La Bobine", desc: "Circuit dipolaire RL." };
 
-        const c3_1 = { id: "3c1", title: "Chapitre 1 : Masse, volume et quantité de matière (Masse molaire volumique, volume molaire)", desc: "Masse molaire volumique et volume molaire.", pdf: false, vid: false };
-        const c3_2 = { id: "3c2", title: "Chapitre 2 : Les solutions aqueuses électrolytiques (Conductance et conductivité)", desc: "Conductance et conductivité.", pdf: false, vid: false };
-        const c3_3 = { id: "3c3", title: "Chapitre 3 : Avancement d'une réaction chimique (Tableau d'avancement, réactif limitant)", desc: "Tableau d'avancement et réactif limitant.", pdf: false, vid: false };
-        const c3_4 = { id: "3c4", title: "Chapitre 4 : Introduction à la chimie organique (Structure et nomenclature des Alcanes et Alcènes)", desc: "Alcanes et Alcènes.", pdf: false, vid: false };
-        const c3_5 = { id: "3c5", title: "Chapitre 5 : Les alcools (Propriétés et nomenclature)", desc: "Propriétés et nomenclature des alcools.", pdf: false, vid: false };
+        const c3_1 = { id: "3c1", title: "Chapitre 1 : Masse, volume et quantité de matière", desc: "Masse molaire volumique et volume molaire." };
+        const c3_2 = { id: "3c2", title: "Chapitre 2 : Solutions aqueuses électrolytiques", desc: "Conductance et conductivité." };
+        const c3_3 = { id: "3c3", title: "Chapitre 3 : Avancement d'une réaction chimique", desc: "Tableau d'avancement, réactif limitant." };
+        const c3_4 = { id: "3c4", title: "Chapitre 4 : Chimie organique", desc: "Structure et nomenclature des Alcanes et Alcènes." };
+        const c3_5 = { id: "3c5", title: "Chapitre 5 : Les alcools", desc: "Propriétés et nomenclature." };
 
-        // --- 4ème Année Secondaire / Bac ---
-        const p4_1 = { id: "4p1", title: "Chapitre 1 : Oscillations mécaniques libres (Pendule élastique non amorti et amorti)", desc: "Pendule élastique non amorti et amorti.", pdf: false, vid: false };
-        const p4_2 = { id: "4p2", title: "Chapitre 2 : Oscillations électriques libres (Circuit LC et circuit RLC)", desc: "Circuit LC et circuit RLC.", pdf: false, vid: false };
-        const p4_3 = { id: "4p3", title: "Chapitre 3 : Oscillations électriques forcées en régime sinusoïdal (Phénomène de résonance d'intensité)", desc: "Résonance d'intensité.", pdf: false, vid: false };
-        const p4_4 = { id: "4p4", title: "Chapitre 4 : Oscillations mécaniques forcées (Résonance mécanique)", desc: "Résonance mécanique.", pdf: false, vid: false };
-        const p4_5 = { id: "4p5", title: "Chapitre 5 : Les Ondes mécaniques progressives (Propagation le long d'une corde et à la surface de l'eau)", desc: "Ondes le long d'une corde et à la surface de l'eau.", pdf: false, vid: false };
-        const p4_6 = { id: "4p6", title: "Chapitre 6 : Les Ondes sonores et ultrasonores", desc: "Ondes sonores et ultrasonores.", pdf: false, vid: false };
-        const p4_7 = { id: "4p7", title: "Chapitre 7 : Physique Nucléaire : La radioactivité (α, β⁻, β⁺, γ) et loi de décroissance", desc: "Radioactivité et loi de décroissance.", pdf: false, vid: false };
-        const p4_8 = { id: "4p8", title: "Chapitre 8 : Énergie nucléaire (Défaut de masse, énergie de liaison, fission et fusion)", desc: "Défaut de masse, énergie de liaison, fission et fusion.", pdf: false, vid: false };
-        const p4_9 = { id: "4p9", title: "Chapitre 9 : Physique Atomique : Spectre de l'atome d'hydrogène et les photons (Uniquement pour les sections Maths et Sciences Exp.)", desc: "Spectre de l'atome d'hydrogène et photons.", pdf: false, vid: false };
+        const p4_1 = { id: "4p1", title: "Chapitre 1 : Oscillations mécaniques libres", desc: "Pendule élastique non amorti et amorti." };
+        const p4_2 = { id: "4p2", title: "Chapitre 2 : Oscillations électriques libres", desc: "Circuit LC et circuit RLC." };
+        const p4_3 = { id: "4p3", title: "Chapitre 3 : Oscillations électriques forcées", desc: "Résonance d'intensité." };
+        const p4_4 = { id: "4p4", title: "Chapitre 4 : Oscillations mécaniques forcées", desc: "Résonance mécanique." };
+        const p4_5 = { id: "4p5", title: "Chapitre 5 : Ondes mécaniques progressives", desc: "Corde et surface de l'eau." };
+        const p4_6 = { id: "4p6", title: "Chapitre 6 : Ondes sonores et ultrasonores", desc: "Propagation et caractéristiques." };
+        const p4_7 = { id: "4p7", title: "Chapitre 7 : Physique Nucléaire", desc: "Radioactivité et loi de décroissance." };
+        const p4_8 = { id: "4p8", title: "Chapitre 8 : Énergie nucléaire", desc: "Défaut de masse, liaison, fission et fusion." };
+        const p4_9 = { id: "4p9", title: "Chapitre 9 : Physique Atomique", desc: "Spectre de l'atome d'hydrogène et photons." };
 
-        const c4_1 = { id: "4c1", title: "Chapitre 1 : Cinétique chimique (Réactions lentes/rapides, facteurs cinétiques)", desc: "Réactions lentes/rapides et facteurs cinétiques.", pdf: false, vid: false };
-        const c4_2 = { id: "4c2", title: "Chapitre 2 : Vitesse de réaction et suivi temporel d'une transformation", desc: "Vitesse de réaction et suivi temporel.", pdf: false, vid: false };
-        const c4_3 = { id: "4c3", title: "Chapitre 3 : Équilibre dynamique et avancement final d'une réaction réversible", desc: "Équilibre dynamique et avancement final.", pdf: false, vid: false };
-        const c4_4 = { id: "4c4", title: "Chapitre 4 : Constante d'équilibre K et Quotient de réaction π (Loi d'action de masse)", desc: "Constante K et quotient de réaction.", pdf: false, vid: false };
-        const c4_5 = { id: "4c5", title: "Chapitre 5 : Les facteurs d'équilibre (Loi de modération de Le Chatelier)", desc: "Loi de modération de Le Chatelier.", pdf: false, vid: false };
-        const c4_6 = { id: "4c6", title: "Chapitre 6 : Les acides et les bases de Brönsted (Définitions et produit ionique de l'eau)", desc: "Acides, bases de Brönsted et produit ionique.", pdf: false, vid: false };
-        const c4_7 = { id: "4c7", title: "Chapitre 7 : pH des solutions aqueuses (Acides/bases forts et faibles)", desc: "pH des solutions acides/bases.", pdf: false, vid: false };
-        const c4_8 = { id: "4c8", title: "Chapitre 8 : Les réactions de dosage (Titrages acido-basiques pH-métriques et colorimétriques)", desc: "Titrages acido-basiques.", pdf: false, vid: false };
+        const c4_1 = { id: "4c1", title: "Chapitre 1 : Cinétique chimique", desc: "Réactions lentes/rapides et facteurs cinétiques." };
+        const c4_2 = { id: "4c2", title: "Chapitre 2 : Vitesse de réaction", desc: "Suivi temporel d'une transformation." };
+        const c4_3 = { id: "4c3", title: "Chapitre 3 : Équilibre dynamique", desc: "Avancement final d'une réaction réversible." };
+        const c4_4 = { id: "4c4", title: "Chapitre 4 : Constante d'équilibre K", desc: "Quotient de réaction π et loi d'action de masse." };
+        const c4_5 = { id: "4c5", title: "Chapitre 5 : Facteurs d'équilibre", desc: "Loi de modération de Le Chatelier." };
+        const c4_6 = { id: "4c6", title: "Chapitre 6 : Acides et bases de Brönsted", desc: "Définitions et produit ionique de l'eau." };
+        const c4_7 = { id: "4c7", title: "Chapitre 7 : pH des solutions aqueuses", desc: "Acides/bases forts et faibles." };
+        const c4_8 = { id: "4c8", title: "Chapitre 8 : Réactions de dosage", desc: "Titrages acido-basiques." };
 
-        // Master curriculum data structure
         const curriculumData = {
             "1ere": {
                 levelName: "1ère Année Secondaire",
@@ -1010,9 +1030,16 @@
 
         let currentLevelKey = "bac";
         let currentSectionKey = "Bac Mathématiques";
-        let userDataStore = JSON.parse(JSON.stringify(curriculumData)); // Deep copy for mutable progress tracking
+        let currentSubject = "physique"; // 'physique' or 'chimie'
+        let currentCategory = "cours"; // 'cours', 'exercices', 'series', 'devoirs'
 
-        // Gestion du basculement Connexion / Inscription
+        // Structure de suivi par catégorie pour chaque leçon
+        // userProgressData[subject][category][lessonId] = { pdf: bool, vid: bool }
+        let userProgressData = {
+            physique: { cours: {}, exercices: {}, series: {}, devoirs: {} },
+            chimie: { cours: {}, exercices: {}, series: {}, devoirs: {} }
+        };
+
         function switchAuthMode(mode) {
             const loginBtn = document.getElementById('tabLoginBtn');
             const signupBtn = document.getElementById('tabSignupBtn');
@@ -1029,12 +1056,10 @@
                 loginBtn.classList.remove('active');
                 signupPanel.classList.add('active');
                 loginPanel.classList.remove('active');
-                // Initialiser les sections pour l'inscription si nécessaire
                 handleLevelChange(document.getElementById('student-level').value);
             }
         }
 
-        // Handle Fluid Expansion on Level Selection (with 1ère année Tronc Commun exclusion)
         function handleLevelChange(levelKey) {
             const sectionGroup = document.getElementById('sectionExpandableGroup');
             const sectionSelect = document.getElementById('student-section');
@@ -1074,30 +1099,56 @@
         }
 
         function showHub() {
-            document.getElementById('hubView').classList.remove('hidden');
-            document.getElementById('physiqueView').classList.remove('active');
-            document.getElementById('chimieView').classList.remove('active');
+            document.getElementById('hubView').classList.add('active');
+            document.getElementById('subjectSubHubView').classList.remove('active');
+            document.getElementById('lessonsListView').classList.remove('active');
             window.scrollTo({ top: 150, behavior: 'smooth' });
         }
 
-        function showSubjectPage(subject) {
-            document.getElementById('hubView').classList.add('hidden');
-            const physView = document.getElementById('physiqueView');
-            const chimView = document.getElementById('chimieView');
+        function openSubjectHub(subject) {
+            currentSubject = subject;
+            document.getElementById('hubView').classList.remove('active');
+            document.getElementById('lessonsListView').classList.remove('active');
+            document.getElementById('subjectSubHubView').classList.add('active');
 
+            const subTitle = document.getElementById('subHubTitle');
             if (subject === 'physique') {
-                physView.classList.add('active');
-                chimView.classList.remove('active');
-                renderLessons('physique');
+                subTitle.innerHTML = '⚙️ Espace Physique (<span class="levelNameDisplay"></span>)';
             } else {
-                chimView.classList.add('active');
-                physView.classList.remove('active');
-                renderLessons('chimie');
+                subTitle.innerHTML = '🧪 Espace Chimie (<span class="levelNameDisplay"></span>)';
             }
+            updateLevelNameDisplays();
             window.scrollTo({ top: 150, behavior: 'smooth' });
         }
 
-        // Fonction unifiée pour gérer l'authentification avec Supabase
+        function selectCategory(category) {
+            currentCategory = category;
+            document.getElementById('subjectSubHubView').classList.remove('active');
+            document.getElementById('lessonsListView').classList.add('active');
+
+            const catLabels = {
+                cours: "📚 Cours",
+                exercices: "✍️ Exercices",
+                series: "📑 Séries",
+                devoirs: "📝 Devoirs"
+            };
+
+            const subjName = currentSubject === 'physique' ? 'Physique' : 'Chimie';
+            document.getElementById('lessonsListHeaderTitle').innerHTML = `${subjName} — ${catLabels[category]} (<span class="levelNameDisplay"></span>)`;
+            updateLevelNameDisplays();
+            renderLessons();
+            window.scrollTo({ top: 150, behavior: 'smooth' });
+        }
+
+        function backToSubHub() {
+            openSubjectHub(currentSubject);
+        }
+
+        function updateLevelNameDisplays() {
+            const levelNameText = currentLevelKey === '1ere' ? curriculumData[currentLevelKey].levelName : `${curriculumData[currentLevelKey].levelName} — ${currentSectionKey}`;
+            document.querySelectorAll('.levelNameDisplay').forEach(el => el.textContent = levelNameText);
+        }
+
         async function handleAuth(event, type) {
             event.preventDefault();
             
@@ -1151,9 +1202,9 @@
                 document.getElementById('welcomeGreeting').textContent = `Bienvenue, ${fullName} !`;
                 document.getElementById('welcomeLevelInfo').textContent = `Filière active : ${levelNameText}.`;
                 
-                document.querySelectorAll('.levelNameDisplay').forEach(el => el.textContent = levelNameText);
+                updateLevelNameDisplays();
                 
-                const activeSecData = userDataStore[currentLevelKey].sections[currentSectionKey] || userDataStore[currentLevelKey].sections[Object.keys(userDataStore[currentLevelKey].sections)[0]];
+                const activeSecData = curriculumData[currentLevelKey].sections[currentSectionKey] || curriculumData[currentLevelKey].sections[Object.keys(curriculumData[currentLevelKey].sections)[0]];
                 document.getElementById('badgePhysiqueCount').textContent = `${activeSecData.physique.length} Chapitres`;
                 document.getElementById('badgeChimieCount').textContent = `${activeSecData.chimie.length} Chapitres`;
 
@@ -1180,7 +1231,6 @@
             authScreen.style.display = 'flex';
             setTimeout(() => { authScreen.style.opacity = '1'; }, 50);
 
-            // Réinitialiser les champs
             document.getElementById('login-email').value = '';
             document.getElementById('login-password').value = '';
             document.getElementById('signup-email').value = '';
@@ -1191,24 +1241,29 @@
             if(secGroup) secGroup.classList.remove('expanded');
         }
 
-        function renderLessons(subject) {
-            const containerId = subject === 'physique' ? 'physiqueLessonsContainer' : 'chimieLessonsContainer';
-            const container = document.getElementById(containerId);
-            const sectionData = userDataStore[currentLevelKey].sections[currentSectionKey];
+        function renderLessons() {
+            const container = document.getElementById('lessonsContainer');
+            const sectionData = curriculumData[currentLevelKey].sections[currentSectionKey];
             if (!sectionData) return;
-            const lessonsList = sectionData[subject];
+            const lessonsList = sectionData[currentSubject];
 
             container.innerHTML = '';
 
             lessonsList.forEach(lesson => {
-                let score = 0;
-                if (lesson.pdf) score += 50;
-                if (lesson.vid) score += 50;
+                // Récupérer l'état de progression pour ce sujet, cette catégorie et cette leçon
+                if (!userProgressData[currentSubject][currentCategory][lesson.id]) {
+                    userProgressData[currentSubject][currentCategory][lesson.id] = { pdf: false, vid: false };
+                }
+                const prog = userProgressData[currentSubject][currentCategory][lesson.id];
 
-                const pdfClass = lesson.pdf ? 'completed' : '';
-                const pdfText = lesson.pdf ? '📄 PDF Consulté (50%)' : '📥 Consulter le PDF';
-                const vidClass = lesson.vid ? 'completed' : '';
-                const vidText = lesson.vid ? '▶ Vidéo Visionnée (50%)' : '▶ Regarder la Vidéo';
+                let score = 0;
+                if (prog.pdf) score += 50;
+                if (prog.vid) score += 50;
+
+                const pdfClass = prog.pdf ? 'completed' : '';
+                const pdfText = prog.pdf ? '📄 Support Consulté (50%)' : '📥 Consulter le Support';
+                const vidClass = prog.vid ? 'completed' : '';
+                const vidText = prog.vid ? '▶ Correction Visionnée (50%)' : '▶ Voir la Correction';
 
                 const cardHTML = `
                     <div class="lesson-card">
@@ -1226,8 +1281,8 @@
                             </div>
                         </div>
                         <div class="lesson-footer">
-                            <button onclick="toggleResource('${subject}', '${lesson.id}', 'pdf')" class="btn-action btn-pdf ${pdfClass}" id="btnPdf-${lesson.id}">${pdfText}</button>
-                            <button onclick="toggleResource('${subject}', '${lesson.id}', 'vid')" class="btn-action btn-vid ${vidClass}" id="btnVid-${lesson.id}">${vidText}</button>
+                            <button onclick="toggleResource('${lesson.id}', 'pdf')" class="btn-action btn-pdf ${pdfClass}" id="btnPdf-${lesson.id}">${pdfText}</button>
+                            <button onclick="toggleResource('${lesson.id}', 'vid')" class="btn-action btn-vid ${vidClass}" id="btnVid-${lesson.id}">${vidText}</button>
                         </div>
                     </div>
                 `;
@@ -1235,19 +1290,18 @@
             });
         }
 
-        function toggleResource(subject, lessonId, type) {
-            const lessonsList = userDataStore[currentLevelKey].sections[currentSectionKey][subject];
-            const lesson = lessonsList.find(l => l.id === lessonId);
+        function toggleResource(lessonId, type) {
+            const prog = userProgressData[currentSubject][currentCategory][lessonId];
 
             if (type === 'pdf') {
-                lesson.pdf = !lesson.pdf;
+                prog.pdf = !prog.pdf;
             } else if (type === 'vid') {
-                lesson.vid = !lesson.vid;
+                prog.vid = !prog.vid;
             }
 
             let score = 0;
-            if (lesson.pdf) score += 50;
-            if (lesson.vid) score += 50;
+            if (prog.pdf) score += 50;
+            if (prog.vid) score += 50;
 
             document.getElementById(`progVal-${lessonId}`).textContent = `${score} / 100`;
             document.getElementById(`progBar-${lessonId}`).style.width = `${score}%`;
@@ -1255,20 +1309,20 @@
             const pdfBtn = document.getElementById(`btnPdf-${lessonId}`);
             const vidBtn = document.getElementById(`btnVid-${lessonId}`);
 
-            if (lesson.pdf) {
+            if (prog.pdf) {
                 pdfBtn.classList.add('completed');
-                pdfBtn.textContent = '📄 PDF Consulté (50%)';
+                pdfBtn.textContent = '📄 Support Consulté (50%)';
             } else {
                 pdfBtn.classList.remove('completed');
-                pdfBtn.textContent = '📥 Consulter le PDF';
+                pdfBtn.textContent = '📥 Consulter le Support';
             }
 
-            if (lesson.vid) {
+            if (prog.vid) {
                 vidBtn.classList.add('completed');
-                vidBtn.textContent = '▶ Vidéo Visionnée (50%)';
+                vidBtn.textContent = '▶ Correction Visionnée (50%)';
             } else {
                 vidBtn.classList.remove('completed');
-                vidBtn.textContent = '▶ Regarder la Vidéo';
+                vidBtn.textContent = '▶ Voir la Correction';
             }
         }
     </script>
