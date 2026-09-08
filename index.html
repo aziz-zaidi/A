@@ -3778,8 +3778,8 @@
             <div class="auth-form-panel active" id="loginPanel">
                 <form onsubmit="handleAuth(event, 'login')">
                     <div class="input-group">
-                        <label for="login-email">Adresse Email</label>
-                        <input type="email" id="login-email" required placeholder="ex: mon@email.com">
+                        <label for="login-email">Email, téléphone ou nom</label>
+                        <input type="text" id="login-email" required autocomplete="username" placeholder="ex: nom@email.com ou Mohamed Aziz">
                     </div>
                     <div class="input-group">
                         <label for="login-password">Mot de passe</label>
@@ -4628,10 +4628,59 @@
                 showPaymentStep();
                 
             } else {
-                // Mode connexion libre : aucune vérification Supabase n'est nécessaire.
-                const fullName = email.split('@')[0] || "Élève";
-                currentLevelKey = "bac";
-                currentSectionKey = "Bac Mathématiques";
+                const loginIdentifier = email.trim();
+                const isEmail = loginIdentifier.includes('@');
+                const isPhone = /^[+\d][\d\s().-]{6,}$/.test(loginIdentifier);
+                let authCredentials;
+                let profileLookup = null;
+
+                if (isEmail) {
+                    authCredentials = { email: loginIdentifier, password };
+                } else if (isPhone) {
+                    authCredentials = { phone: loginIdentifier.replace(/[\s().-]/g, ''), password };
+                } else {
+                    const { data: namedProfile, error: nameError } = await supabaseClient
+                        .rpc('resolve_login_email', { login_name: loginIdentifier });
+                    const resolvedProfile = Array.isArray(namedProfile) ? namedProfile[0] : namedProfile;
+
+                    if (nameError || !resolvedProfile?.email) {
+                        alert('Nom introuvable. Utilisez votre email, votre téléphone ou votre nom exact.');
+                        return;
+                    }
+
+                    profileLookup = resolvedProfile;
+                    authCredentials = { email: resolvedProfile.email, password };
+                }
+
+                const { data: authData, error: signInError } = await supabaseClient.auth.signInWithPassword(authCredentials);
+                if (signInError || !authData.user) {
+                    alert('Connexion impossible : vérifiez vos identifiants.');
+                    return;
+                }
+
+                const { data: profile } = await supabaseClient
+                    .from('profiles')
+                    .select('full_name, role, level, section, email')
+                    .eq('id', authData.user.id)
+                    .maybeSingle();
+
+                const activeProfile = profile || profileLookup || {};
+                if (!['admin', 'teacher', 'student'].includes(activeProfile.role)) {
+                    await supabaseClient.auth.signOut();
+                    alert('Votre compte n’a pas encore de rôle autorisé. Contactez un administrateur.');
+                    return;
+                }
+
+                if (['admin', 'teacher'].includes(activeProfile.role)) {
+                    window.location.href = 'https://admin-html-orcin.vercel.app/';
+                    return;
+                }
+
+                const fullName = activeProfile.full_name || authData.user.user_metadata?.full_name || loginIdentifier.split('@')[0] || "Élève";
+                currentLevelKey = activeProfile.level && curriculumData[activeProfile.level] ? activeProfile.level : "bac";
+                currentSectionKey = activeProfile.section && curriculumData[currentLevelKey].sections[activeProfile.section]
+                    ? activeProfile.section
+                    : Object.keys(curriculumData[currentLevelKey].sections)[0];
 
                 const levelNameText = currentLevelKey === '1ere' ? curriculumData[currentLevelKey].levelName : `${curriculumData[currentLevelKey].levelName} — ${currentSectionKey}`;
 
@@ -5083,7 +5132,20 @@
             }
         }
 
-        function renderLessons() {
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
+        }
+
+        function safeResourceUrl(value) {
+            try {
+                const url = new URL(value, window.location.href);
+                return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+            } catch {
+                return '';
+            }
+        }
+
+        async function renderLessons() {
             const container = document.getElementById('lessonsContainer');
             const sectionData = curriculumData[currentLevelKey].sections[currentSectionKey];
             if (!sectionData) return;
@@ -5093,21 +5155,43 @@
                 return;
             }
 
-            const lessonsList = sectionData[currentSubject];
+            const lessonsList = sectionData[currentSubject] || [];
 
             container.innerHTML = '';
 
-            lessonsList.forEach(lesson => {
+            let publishedLessons = [];
+            const { data: remoteLessons, error } = await supabaseClient
+                .from('lessons')
+                .select('id, title, description, pdf_url, video_url, level_key, section_key')
+                .eq('subject_id', currentSubject)
+                .eq('category', currentCategory)
+                .order('created_at', { ascending: false });
+
+            if (!error && remoteLessons) {
+                publishedLessons = remoteLessons.filter(lesson =>
+                    (!lesson.level_key || lesson.level_key === currentLevelKey) &&
+                    (!lesson.section_key || lesson.section_key === currentSectionKey)
+                );
+            }
+
+            [...lessonsList, ...publishedLessons].forEach(lesson => {
                 const storedState = userProgressData[currentSubject][currentCategory][lesson.id];
                 const completed = storedState === true || Boolean(storedState?.completed);
                 userProgressData[currentSubject][currentCategory][lesson.id] = completed;
                 const score = completed ? 100 : 0;
+                const pdfUrl = safeResourceUrl(lesson.pdf_url);
+                const videoUrl = safeResourceUrl(lesson.video_url);
+                const resourceLinks = [
+                    pdfUrl ? `<a href="${escapeHtml(pdfUrl)}" target="_blank" rel="noopener noreferrer">PDF</a>` : '',
+                    videoUrl ? `<a href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener noreferrer">Vidéo</a>` : ''
+                ].filter(Boolean).join(' · ');
 
                 const cardHTML = `
                     <div class="lesson-card">
                         <div class="lesson-top">
-                            <h4>${lesson.title}</h4>
-                            <p>${lesson.desc}</p>
+                            <h4>${escapeHtml(lesson.title)}</h4>
+                            <p>${escapeHtml(lesson.desc || lesson.description || '')}</p>
+                            ${resourceLinks ? `<p class="lesson-resources">${resourceLinks}</p>` : ''}
                         </div>
                         <div class="progress-container">
                             <div class="progress-info">
@@ -5188,25 +5272,6 @@
         restoreFocusState();
         initLabModel();
         initPlatformInteractions();
-        // Paste this anywhere inside your <script> tag in index.html
-async function checkRoleAndRedirect(session) {
-    const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .single();
-
-    if (error) {
-        console.error("Error fetching role:", error);
-        return;
-    }
-
-    if (profile && profile.role === 'admin') {
-        window.location.href = 'admin.html'; // Sends admin to admin panel
-    } else {
-        alert("Bienvenue !"); // Keeps student on the main site
-    }
-}
     </script>
 </body>
 </html>
