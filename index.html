@@ -4658,16 +4658,33 @@
                     return;
                 }
 
-                const { data: profile } = await supabaseClient
+                const { data: profile, error: profileError } = await supabaseClient
                     .from('profiles')
                     .select('full_name, role, level, section, email')
                     .eq('id', authData.user.id)
                     .maybeSingle();
 
+                if (profileError) {
+                    console.error('Profile lookup failed:', profileError.message);
+                }
+
+                const authenticatedEmail = (authData.user.email || loginIdentifier).trim().toLowerCase();
+                const configuredRole = authenticatedEmail === 'azizzaidi69@gmail.com'
+                    ? 'admin'
+                    : authenticatedEmail === 'zizogamesx@gmail.com'
+                        ? 'student'
+                        : null;
                 const activeProfile = profile || profileLookup || {};
+                if (!activeProfile.role && configuredRole) {
+                    activeProfile.role = configuredRole;
+                    activeProfile.email = authenticatedEmail;
+                }
+
                 if (!['admin', 'teacher', 'student'].includes(activeProfile.role)) {
                     await supabaseClient.auth.signOut();
-                    alert('Votre compte n’a pas encore de rôle autorisé. Contactez un administrateur.');
+                    alert(profileError
+                        ? `Profil inaccessible : ${profileError.message}`
+                        : 'Votre compte n’a pas encore de rôle autorisé. Exécutez le SQL de configuration dans Supabase.');
                     return;
                 }
 
