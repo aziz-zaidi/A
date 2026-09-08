@@ -5238,52 +5238,32 @@
         initLabModel();
         initPlatformInteractions();
         // Paste this anywhere inside your <script> tag in index.html
-async function checkRoleAndRedirect(session) {
-    const { data: profile, error } = await supabaseClient
-        .from('profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .single();
+async function handleAdminLogin(email, password) {
+  // 1. Sign in with Supabase
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
 
-    if (error) {
-        console.error("Error fetching role:", error);
-        return;
-    }
-
-    if (profile && profile.role === 'admin') {
-        window.location.href = 'admin1.html'; // Sends admin to admin panel
-    } else {
-        alert("Bienvenue !"); // Keeps student on the main site
-    }
-}
-<script>
-  // Attach this function to your login form submit event
-  async function loginUser(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-
-    if (error) {
-      alert('Error: ' + error.message);
-      return;
-    }
-
-    // Fetch user role right after login
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', data.user.id)
-      .single();
-
-    // Redirect based on role
-    if (profile?.role === 'admin') {
-      window.location.href = 'https://admin-html-git-main-aziz-zaidi.vercel.app/';
-    } else {
-      window.location.href = 'https://zaidi-academy.vercel.app/'; // Change to your main student page file name
-    }
+  if (error) {
+    alert('Login failed: ' + error.message);
+    return;
   }
-</script>
+
+  // 2. Immediately fetch the role from the profiles table
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', data.user.id)
+    .single();
+
+  // 3. Redirect instantly based on role
+  if (profile?.role === 'admin') {
+    window.location.replace('https://admin-html-git-main-aziz-zaidi.vercel.app/');
+  } else {
+    window.location.replace('https://zaidi-academy.vercel.app/');
+  }
+}
     </script>
 </body>
 </html>
