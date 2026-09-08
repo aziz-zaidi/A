@@ -5238,32 +5238,39 @@
         initLabModel();
         initPlatformInteractions();
         // Paste this anywhere inside your <script> tag in index.html
-async function handleAdminLogin(email, password) {
-  // 1. Sign in with Supabase
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email,
-    password: password
-  });
+<script>
+  async function checkUserRole() {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError || !session) {
+      window.location.href = 'login.html';
+      return;
+    }
 
-  if (error) {
-    alert('Login failed: ' + error.message);
-    return;
+    // Fetch the role and catch any database/RLS errors
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', session.user.id)
+      .single();
+
+    if (profileError) {
+      console.error('Profile fetch error:', profileError.message);
+      alert('Database Error: ' + profileError.message);
+      return;
+    }
+
+    if (profile?.role === 'admin') {
+      window.location.href = 'https://admin-html-git-main-aziz-zaidi.vercel.app/';
+    } else if (profile?.role === 'student') {
+      window.location.href = 'https://zaidi-academy.vercel.app/';
+    } else {
+      alert('Votre compte n’a pas encore de rôle autorisé. Contactez un administrateur.');
+    }
   }
 
-  // 2. Immediately fetch the role from the profiles table
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', data.user.id)
-    .single();
-
-  // 3. Redirect instantly based on role
-  if (profile?.role === 'admin') {
-    window.location.replace('https://admin-html-git-main-aziz-zaidi.vercel.app/');
-  } else {
-    window.location.replace('https://zaidi-academy.vercel.app/');
-  }
-}
-    </script>
+  checkUserRole();
+</script>
+     </script>
 </body>
 </html>
