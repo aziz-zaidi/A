@@ -144,7 +144,7 @@
         }
 
         .payment-step {
-            display: none;
+            display: none !important;
             animation: fadeIn 0.4s ease;
         }
 
@@ -203,7 +203,7 @@
         }
 
         .payment-portal {
-            display: none;
+            display: none !important;
             position: relative;
             z-index: 3;
             width: 100%;
@@ -4639,7 +4639,7 @@
                     return;
                 }
                 prepareSignupDashboard(name, email);
-                showPaymentStep();
+                enterDashboard();
                 
             } else {
                 const loginIdentifier = email.trim();
