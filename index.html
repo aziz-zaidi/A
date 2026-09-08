@@ -3778,8 +3778,8 @@
             <div class="auth-form-panel active" id="loginPanel">
                 <form onsubmit="handleAuth(event, 'login')">
                     <div class="input-group">
-                        <label for="login-email">Email, téléphone ou nom</label>
-                        <input type="text" id="login-email" required autocomplete="username" placeholder="ex: nom@email.com ou Mohamed Aziz">
+                        <label for="login-email">Adresse Email</label>
+                        <input type="email" id="login-email" required placeholder="ex: mon@email.com">
                     </div>
                     <div class="input-group">
                         <label for="login-password">Mot de passe</label>
@@ -4628,59 +4628,10 @@
                 showPaymentStep();
                 
             } else {
-                const loginIdentifier = email.trim();
-                const isEmail = loginIdentifier.includes('@');
-                const isPhone = /^[+\d][\d\s().-]{6,}$/.test(loginIdentifier);
-                let authCredentials;
-                let profileLookup = null;
-
-                if (isEmail) {
-                    authCredentials = { email: loginIdentifier, password };
-                } else if (isPhone) {
-                    authCredentials = { phone: loginIdentifier.replace(/[\s().-]/g, ''), password };
-                } else {
-                    const { data: namedProfile, error: nameError } = await supabaseClient
-                        .rpc('resolve_login_email', { login_name: loginIdentifier });
-                    const resolvedProfile = Array.isArray(namedProfile) ? namedProfile[0] : namedProfile;
-
-                    if (nameError || !resolvedProfile?.email) {
-                        alert('Nom introuvable. Utilisez votre email, votre téléphone ou votre nom exact.');
-                        return;
-                    }
-
-                    profileLookup = resolvedProfile;
-                    authCredentials = { email: resolvedProfile.email, password };
-                }
-
-                const { data: authData, error: signInError } = await supabaseClient.auth.signInWithPassword(authCredentials);
-                if (signInError || !authData.user) {
-                    alert('Connexion impossible : vérifiez vos identifiants.');
-                    return;
-                }
-
-                const { data: profile } = await supabaseClient
-                    .from('profiles')
-                    .select('full_name, role, level, section, email')
-                    .eq('id', authData.user.id)
-                    .maybeSingle();
-
-                const activeProfile = profile || profileLookup || {};
-                if (!['admin', 'student'].includes(activeProfile.role)) {
-                    await supabaseClient.auth.signOut();
-                    alert('Votre compte n’a pas encore de rôle autorisé. Contactez un administrateur.');
-                    return;
-                }
-
-                if (activeProfile.role === 'admin') {
-                    window.location.href = 'admin1.html';
-                    return;
-                }
-
-                const fullName = activeProfile.full_name || authData.user.user_metadata?.full_name || loginIdentifier.split('@')[0] || "Élève";
-                currentLevelKey = activeProfile.level && curriculumData[activeProfile.level] ? activeProfile.level : "bac";
-                currentSectionKey = activeProfile.section && curriculumData[currentLevelKey].sections[activeProfile.section]
-                    ? activeProfile.section
-                    : Object.keys(curriculumData[currentLevelKey].sections)[0];
+                // Mode connexion libre : aucune vérification Supabase n'est nécessaire.
+                const fullName = email.split('@')[0] || "Élève";
+                currentLevelKey = "bac";
+                currentSectionKey = "Bac Mathématiques";
 
                 const levelNameText = currentLevelKey === '1ere' ? curriculumData[currentLevelKey].levelName : `${curriculumData[currentLevelKey].levelName} — ${currentSectionKey}`;
 
@@ -5238,39 +5189,24 @@
         initLabModel();
         initPlatformInteractions();
         // Paste this anywhere inside your <script> tag in index.html
-<script>
-  async function checkUserRole() {
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError || !session) {
-      window.location.href = 'login.html';
-      return;
+async function checkRoleAndRedirect(session) {
+    const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+    if (error) {
+        console.error("Error fetching role:", error);
+        return;
     }
 
-    // Fetch the role and catch any database/RLS errors
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', session.user.id)
-      .single();
-
-    if (profileError) {
-      console.error('Profile fetch error:', profileError.message);
-      alert('Database Error: ' + profileError.message);
-      return;
-    }
-
-    if (profile?.role === 'admin') {
-      window.location.href = 'https://admin-html-git-main-aziz-zaidi.vercel.app/';
-    } else if (profile?.role === 'student') {
-      window.location.href = 'https://zaidi-academy.vercel.app/';
+    if (profile && profile.role === 'admin') {
+        window.location.href = 'admin.html'; // Sends admin to admin panel
     } else {
-      alert('Votre compte n’a pas encore de rôle autorisé. Contactez un administrateur.');
+        alert("Bienvenue !"); // Keeps student on the main site
     }
-  }
-
-  checkUserRole();
-</script>
-     </script>
+}
+    </script>
 </body>
 </html>
