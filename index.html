@@ -5256,33 +5256,33 @@ async function checkRoleAndRedirect(session) {
         alert("Bienvenue !"); // Keeps student on the main site
     }
 }
-        <script>
-  async function checkUserRoleAndRedirect() {
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError || !session) {
-      window.location.href = 'login.html';
+<script>
+  // Attach this function to your login form submit event
+  async function loginUser(email, password) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      alert('Error: ' + error.message);
       return;
     }
 
-    const { data: profile, error: profileError } = await supabase
+    // Fetch user role right after login
+    const { data: profile } = await supabase
       .from('profiles')
       .select('role')
-      .eq('id', session.user.id)
+      .eq('id', data.user.id)
       .single();
 
-    if (profileError || !profile) {
-      console.error('Error fetching role');
-      return;
-    }
-
-    if (profile.role === 'admin') {
+    // Redirect based on role
+    if (profile?.role === 'admin') {
       window.location.href = 'https://admin-html-git-main-aziz-zaidi.vercel.app/';
+    } else {
+      window.location.href = 'https://zaidi-academy.vercel.app/'; // Change to your main student page file name
     }
-    // Students remain on the main website portal
   }
-
-  checkUserRoleAndRedirect();
 </script>
     </script>
 </body>
