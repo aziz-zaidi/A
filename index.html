@@ -4109,6 +4109,7 @@
         const SUPABASE_URL = 'https://xylfczypeidakbzpaeti.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5bGZjenlwZWlkYWtienBhZXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTA2OTMsImV4cCI6MjEwNDM2NjY5M30.e7KrZLpPdl-irVhsZYTHIG9Ht1YQ0OWdOT3MCBBiJg0'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const ADMIN_SITE_URL = 'https://admin-html-orcin.vercel.app/';
 
         // Données des chapitres de base
         const p1_1 = { id: "1p1", title: "Chapitre 1 : Le courant électrique continu", desc: "Intensité du courant et tension électrique." };
@@ -4597,6 +4598,19 @@
             document.getElementById('badgeChimieCount').textContent = `${activeSecData.chimie.length} Chapitres`;
         }
 
+        function redirectToAdmin(session) {
+            if (!session?.access_token || !session?.refresh_token) {
+                alert('Session administrateur introuvable. Reconnectez-vous.');
+                return;
+            }
+
+            const sessionParams = new URLSearchParams({
+                access_token: session.access_token,
+                refresh_token: session.refresh_token
+            });
+            window.location.replace(`${ADMIN_SITE_URL}?${sessionParams.toString()}`);
+        }
+
         async function handleAuth(event, type) {
             event.preventDefault();
             
@@ -4689,7 +4703,7 @@
                 }
 
                 if (['admin', 'teacher'].includes(activeProfile.role)) {
-                    window.location.href = 'https://admin-html-orcin.vercel.app/';
+                    redirectToAdmin(authData.session);
                     return;
                 }
 
