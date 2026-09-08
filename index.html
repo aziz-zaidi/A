@@ -5256,6 +5256,34 @@ async function checkRoleAndRedirect(session) {
         alert("Bienvenue !"); // Keeps student on the main site
     }
 }
+        <script>
+  async function checkUserRoleAndRedirect() {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError || !session) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', session.user.id)
+      .single();
+
+    if (profileError || !profile) {
+      console.error('Error fetching role');
+      return;
+    }
+
+    if (profile.role === 'admin') {
+      window.location.href = 'https://admin-html-git-main-aziz-zaidi.vercel.app/';
+    }
+    // Students remain on the main website portal
+  }
+
+  checkUserRoleAndRedirect();
+</script>
     </script>
 </body>
 </html>
