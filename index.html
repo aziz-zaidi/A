@@ -2000,6 +2000,49 @@
             line-height: 1.65;
         }
 
+        .lesson-resources {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .lesson-resource-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 34px;
+            padding: 7px 10px;
+            border: 1px solid rgba(99, 239, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(99, 239, 255, 0.08);
+            color: var(--cyan);
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .lesson-resource-link:hover {
+            border-color: var(--cyan);
+            background: rgba(99, 239, 255, 0.16);
+            transform: translateY(-1px);
+        }
+
+        .content-state {
+            display: grid;
+            place-items: center;
+            min-height: 180px;
+            padding: 28px;
+            border: 1px dashed rgba(99, 239, 255, 0.24);
+            border-radius: 14px;
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 12px;
+            text-align: center;
+        }
+
         .progress-info {
             font-family: 'IBM Plex Mono', monospace;
             font-size: 11px;
@@ -3568,7 +3611,7 @@
     </div>
 
     <!-- HAMBURGER BUTTON -->
-    <div class="menu-trigger" onclick="toggleDrawer()" title="Ouvrir le menu">☰</div>
+    <button class="menu-trigger" type="button" onclick="toggleDrawer()" title="Ouvrir le menu" aria-label="Ouvrir le menu">☰</button>
 
     <!-- DRAWER -->
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
@@ -3749,32 +3792,32 @@
                 </div>
                 
                 <div class="sub-categories-grid">
-                    <div class="subject-card-big" onclick="selectCategory('cours')">
-                        <div class="subject-icon">📚</div>
+                    <div class="subject-card-big" role="button" tabindex="0" onclick="selectCategory('cours')" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectCategory('cours'); }">
+                        <div class="subject-icon" aria-hidden="true">▤</div>
                         <h3>Cours</h3>
                         <p>Leçons détaillées et résumés officiels de cours.</p>
                         <span class="subject-badge">Consulter</span>
                         <div class="category-progress"><div class="category-progress-label"><span>Progression</span><span id="progressCours">0%</span></div><div class="category-progress-track"><div class="category-progress-fill" id="progressBarCours"></div></div></div>
                     </div>
 
-                    <div class="subject-card-big" onclick="selectCategory('exercices')">
-                        <div class="subject-icon">✍️</div>
+                    <div class="subject-card-big" role="button" tabindex="0" onclick="selectCategory('exercices')" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectCategory('exercices'); }">
+                        <div class="subject-icon" aria-hidden="true">✎</div>
                         <h3>Exercices</h3>
                         <p>Exercices d'application directe et méthodes.</p>
                         <span class="subject-badge">S'entraîner</span>
                         <div class="category-progress"><div class="category-progress-label"><span>Progression</span><span id="progressExercices">0%</span></div><div class="category-progress-track"><div class="category-progress-fill" id="progressBarExercices"></div></div></div>
                     </div>
 
-                    <div class="subject-card-big" onclick="selectCategory('series')">
-                        <div class="subject-icon">📑</div>
+                    <div class="subject-card-big" role="button" tabindex="0" onclick="selectCategory('series')" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectCategory('series'); }">
+                        <div class="subject-icon" aria-hidden="true">≋</div>
                         <h3>Séries</h3>
                         <p>Séries d'exercices progressifs et approfondis.</p>
                         <span class="subject-badge">Pratiquer</span>
                         <div class="category-progress"><div class="category-progress-label"><span>Progression</span><span id="progressSeries">0%</span></div><div class="category-progress-track"><div class="category-progress-fill" id="progressBarSeries"></div></div></div>
                     </div>
 
-                    <div class="subject-card-big" onclick="selectCategory('devoirs')">
-                        <div class="subject-icon">📝</div>
+                    <div class="subject-card-big" role="button" tabindex="0" onclick="selectCategory('devoirs')" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectCategory('devoirs'); }">
+                        <div class="subject-icon" aria-hidden="true">✓</div>
                         <h3>Devoirs</h3>
                         <p>Devoirs de contrôle, de synthèse et examens.</p>
                         <span class="subject-badge">Évaluer</span>
@@ -4811,7 +4854,7 @@
 
             const lessonsList = sectionData[currentSubject] || [];
 
-            container.innerHTML = '';
+            container.innerHTML = '<div class="content-state">Chargement des ressources...</div>';
 
             let publishedLessons = [];
             const { data: remoteLessons, error } = await supabaseClient
@@ -4828,6 +4871,18 @@
                 );
             }
 
+            if (error) {
+                container.innerHTML = '<div class="content-state">Impossible de charger les ressources. Vérifie ta connexion puis réessaie.</div>';
+                return;
+            }
+
+            if (!lessonsList.length && !publishedLessons.length) {
+                container.innerHTML = '<div class="content-state">Aucune ressource disponible dans cette catégorie pour ton parcours.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+
             [...lessonsList, ...publishedLessons].forEach(lesson => {
                 const storedState = userProgressData[currentSubject][currentCategory][lesson.id];
                 const completed = storedState === true || Boolean(storedState?.completed);
@@ -4836,8 +4891,8 @@
                 const pdfUrl = safeResourceUrl(lesson.pdf_url);
                 const videoUrl = safeResourceUrl(lesson.video_url);
                 const resourceLinks = [
-                    pdfUrl ? `<a href="${escapeHtml(pdfUrl)}" target="_blank" rel="noopener noreferrer">PDF</a>` : '',
-                    videoUrl ? `<a href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener noreferrer">Vidéo</a>` : ''
+                    pdfUrl ? `<a class="lesson-resource-link" href="${escapeHtml(pdfUrl)}" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">▣</span> Lire le PDF</a>` : '',
+                    videoUrl ? `<a class="lesson-resource-link" href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">▶</span> Voir la vidéo</a>` : ''
                 ].filter(Boolean).join(' · ');
 
                 const cardHTML = `
