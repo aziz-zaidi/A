@@ -106,32 +106,10 @@
             margin-bottom: 20px;
         }
 
-        .auth-switcher {
-            display: flex;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 4px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .switcher-btn {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 10px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: 0.3s;
-        }
-
-        .switcher-btn.active {
-            background: var(--orange-primary);
-            color: var(--text-white);
-            box-shadow: 0 2px 10px rgba(249, 115, 22, 0.4);
+        .auth-access-note {
+            margin: -8px 0 20px;
+            color: #8ea2bd;
+            font-size: 12px;
         }
 
         .auth-form-panel {
@@ -141,193 +119,6 @@
         .auth-form-panel.active {
             display: block;
             animation: fadeIn 0.4s ease;
-        }
-
-        .payment-step {
-            display: none !important;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .payment-step.active {
-            display: block;
-        }
-
-        .payment-step-icon {
-            display: grid;
-            place-items: center;
-            width: 52px;
-            height: 52px;
-            margin: 4px auto 14px;
-            border: 1px solid rgba(103, 232, 249, 0.35);
-            border-radius: 14px;
-            background: rgba(15, 45, 62, 0.78);
-            color: #67e8f9;
-            font-size: 24px;
-        }
-
-        .payment-step h2 {
-            color: var(--text-white);
-            font-size: 19px;
-            margin-bottom: 8px;
-        }
-
-        .payment-step p {
-            color: var(--text-muted);
-            font-size: 13px;
-            line-height: 1.5;
-            margin-bottom: 18px;
-        }
-
-        .payment-portal-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-decoration: none;
-            margin-top: 0;
-        }
-
-        .payment-back-btn {
-            width: 100%;
-            margin-top: 12px;
-            padding: 9px;
-            border: 0;
-            background: transparent;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .payment-back-btn:hover {
-            color: var(--text-white);
-        }
-
-        .payment-portal {
-            display: none !important;
-            position: relative;
-            z-index: 3;
-            width: 100%;
-            max-width: 720px;
-            margin: auto;
-            padding: 28px;
-            background: rgba(7, 24, 39, 0.94);
-            border: 1px solid rgba(103, 232, 249, 0.35);
-            border-radius: 20px;
-            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.55);
-            text-align: left;
-            animation: fadeInDown 0.45s var(--transition-smooth);
-        }
-
-        .payment-portal.active {
-            display: block;
-        }
-
-        .payment-portal-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .payment-portal-header h2 {
-            color: var(--text-white);
-            font-size: 23px;
-            margin-bottom: 6px;
-        }
-
-        .payment-portal-header p,
-        .payment-security-note {
-            color: var(--text-muted);
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .payment-close-btn {
-            width: 34px;
-            height: 34px;
-            flex: 0 0 auto;
-            border: 1px solid rgba(103, 232, 249, 0.2);
-            border-radius: 9px;
-            background: rgba(15, 45, 62, 0.78);
-            color: var(--text-white);
-            cursor: pointer;
-            font-size: 20px;
-            line-height: 1;
-        }
-
-        .payment-portal-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-            gap: 20px;
-        }
-
-        .payment-plan,
-        .payment-methods {
-            padding: 18px;
-            border: 1px solid rgba(103, 232, 249, 0.18);
-            border-radius: 14px;
-            background: rgba(3, 15, 28, 0.62);
-        }
-
-        .payment-plan h3,
-        .payment-methods h3 {
-            color: var(--text-white);
-            font-size: 14px;
-            margin-bottom: 14px;
-        }
-
-        .payment-plan-price {
-            color: #67e8f9;
-            font-size: 30px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .payment-plan small {
-            color: var(--text-muted);
-            font-size: 12px;
-        }
-
-        .payment-method-option {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-height: 46px;
-            padding: 10px 12px;
-            margin-bottom: 9px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: var(--text-white);
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .payment-method-option:has(input:checked) {
-            border-color: #67e8f9;
-            background: rgba(34, 211, 238, 0.1);
-        }
-
-        .payment-method-option input {
-            accent-color: #67e8f9;
-        }
-
-        .payment-security-note {
-            margin: 18px 0 0;
-        }
-
-        .payment-submit-btn {
-            margin-top: 18px;
-        }
-
-        @media (max-width: 640px) {
-            .payment-portal {
-                padding: 22px 18px;
-            }
-
-            .payment-portal-grid {
-                grid-template-columns: 1fr;
-            }
         }
 
         .input-group {
@@ -1743,7 +1534,6 @@
             color: #67e8f9;
         }
 
-        .auth-switcher,
         .user-pill,
         .btn-back,
         .subject-badge {
@@ -2732,17 +2522,12 @@
         .auth-logo { font-family: var(--mono); font-size: 30px; letter-spacing: -0.08em; text-shadow: 0 0 24px rgba(99, 239, 255, 0.35); }
         .auth-logo span { color: var(--cyan); }
         .auth-subtitle { color: #7e90ad; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
-        .auth-switcher { border-color: var(--line); background: rgba(3, 7, 18, 0.74); border-radius: 13px; }
-        .switcher-btn { border-radius: 9px; color: var(--muted); }
-        .switcher-btn.active { background: linear-gradient(100deg, rgba(99, 239, 255, 0.82), rgba(167, 139, 250, 0.88)); color: #03050b; box-shadow: 0 0 28px rgba(99, 239, 255, 0.22); }
         .input-group label { color: #a5bad4; font-family: var(--mono); font-size: 10px; }
         .input-group input, .input-group select { border-color: rgba(99, 239, 255, 0.18); border-radius: 11px; background: rgba(2, 7, 17, 0.78); color: var(--ink); }
         .input-group input::placeholder { color: #52617a; }
         .input-group input:focus, .input-group select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(99, 239, 255, 0.1), 0 0 22px rgba(99, 239, 255, 0.12); }
 
-        .btn-custom,
-        .payment-portal-btn,
-        .payment-submit-btn {
+        .btn-custom {
             min-height: 48px;
             border: 1px solid rgba(99, 239, 255, 0.48);
             border-radius: 10px;
@@ -2753,14 +2538,8 @@
         }
 
         .btn-custom:hover { background: linear-gradient(100deg, #67e8f9, #c4b5fd); color: #02050d; box-shadow: 0 0 36px rgba(99, 239, 255, 0.38); }
-        .payment-step-icon { border-color: rgba(167, 139, 250, 0.55); background: rgba(99, 239, 255, 0.08); color: var(--cyan); box-shadow: 0 0 25px rgba(99, 239, 255, 0.15); }
-        .payment-step h2 { font-family: var(--mono); letter-spacing: -0.04em; }
-        .payment-step p { color: #8ea2bd; }
-        .payment-back-btn { color: #72839d; }
-
-        .payment-portal { border-color: rgba(167, 139, 250, 0.36); background: linear-gradient(145deg, rgba(12, 20, 42, 0.97), rgba(3, 7, 18, 0.95)); box-shadow: 0 0 0 1px rgba(99, 239, 255, 0.06), 0 30px 110px rgba(0, 0, 0, 0.75); }
-        .payment-portal::before, .view-section::before, .hero::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(99, 239, 255, 0.04), transparent); transform: translateX(-100%); animation: signalScan 8s ease-in-out infinite; }
-        .payment-portal, .view-section, .hero { position: relative; overflow: hidden; }
+        .view-section::before, .hero::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(99, 239, 255, 0.04), transparent); transform: translateX(-100%); animation: signalScan 8s ease-in-out infinite; }
+        .view-section, .hero { position: relative; overflow: hidden; }
         @keyframes signalScan { 0%, 55% { transform: translateX(-100%); } 75%, 100% { transform: translateX(100%); } }
 
         .subject-card-big:nth-child(odd) { background: linear-gradient(145deg, rgba(13, 32, 49, 0.9), rgba(7, 13, 29, 0.9)); }
@@ -2958,7 +2737,7 @@
             }
         }
 
-        .focus-stat strong, .focus-clock, .lab-widget-value, .payment-plan-price { font-family: var(--mono); }
+        .focus-stat strong, .focus-clock, .lab-widget-value { font-family: var(--mono); }
         .focus-side-panel:nth-child(3) { background: linear-gradient(145deg, rgba(24, 18, 52, 0.78), rgba(9, 15, 31, 0.7)); }
         .focus-side-panel:nth-child(4) { background: linear-gradient(145deg, rgba(12, 37, 46, 0.78), rgba(9, 15, 31, 0.7)); }
 
@@ -3769,12 +3548,8 @@
             <div class="auth-logo">Zaidi<span>Academy</span></div>
             <p class="auth-subtitle">Portail Pédagogique Officiel - De la 1ère au Bac</p>
             
-            <div class="auth-switcher">
-                <button type="button" class="switcher-btn active" id="tabLoginBtn" onclick="switchAuthMode('login')">Se Connecter</button>
-                <button type="button" class="switcher-btn" id="tabSignupBtn" onclick="switchAuthMode('signup')">S'inscrire</button>
-            </div>
+            <p class="auth-access-note">Les accès sont créés et validés par l'administration.</p>
 
-            <!-- Connexion -->
             <div class="auth-form-panel active" id="loginPanel">
                 <form onsubmit="handleAuth(event, 'login')">
                     <div class="input-group">
@@ -3789,88 +3564,6 @@
                 </form>
             </div>
 
-            <div class="payment-step" id="paymentStep" aria-live="polite">
-                <div class="payment-step-icon" aria-hidden="true">$</div>
-                <h2>Finaliser votre accès</h2>
-                <p>Vos identifiants sont prêts. Ouvrez le portail sécurisé pour choisir votre moyen de paiement avant d'entrer dans votre espace.</p>
-                <button type="button" class="btn-custom payment-portal-btn" onclick="openPaymentPortal()">Ouvrir le portail de paiement <span aria-hidden="true">↗</span></button>
-                <button type="button" class="payment-back-btn" onclick="returnToLogin()">Modifier mes identifiants</button>
-                <button type="button" class="btn-custom" id="accessDashboardBtn" onclick="completeLogin()" disabled>Accéder à mon espace</button>
-            </div>
-
-            <div class="payment-portal" id="paymentPortal" role="dialog" aria-labelledby="paymentPortalTitle" aria-modal="true">
-                <div class="payment-portal-header">
-                    <div>
-                        <h2 id="paymentPortalTitle">Portail de paiement</h2>
-                        <p>Choisissez votre formule et votre moyen de paiement.</p>
-                    </div>
-                    <button type="button" class="payment-close-btn" onclick="closePaymentPortal()" aria-label="Fermer">&times;</button>
-                </div>
-                <form onsubmit="submitPayment(event)">
-                    <div class="payment-portal-grid">
-                        <section class="payment-plan" aria-label="Formule sélectionnée">
-                            <h3>Formule Zaidi Academy</h3>
-                            <div class="payment-plan-price">29,90 TND</div>
-                            <small>Accès pédagogique pendant 30 jours</small>
-                        </section>
-                        <section class="payment-methods" aria-label="Moyen de paiement">
-                            <h3>Moyen de paiement</h3>
-                            <label class="payment-method-option">
-                                <input type="radio" name="payment-method" value="card" checked>
-                                Carte bancaire
-                            </label>
-                            <label class="payment-method-option">
-                                <input type="radio" name="payment-method" value="paypal">
-                                PayPal
-                            </label>
-                            <label class="payment-method-option">
-                                <input type="radio" name="payment-method" value="bank-transfer">
-                                Virement bancaire
-                            </label>
-                        </section>
-                    </div>
-                    <p class="payment-security-note">Le paiement est finalisé par un prestataire sécurisé. Aucune donnée bancaire n'est enregistrée dans cette page.</p>
-                    <button type="submit" class="btn-custom payment-submit-btn">Continuer vers le paiement sécurisé <span aria-hidden="true">↗</span></button>
-                </form>
-            </div>
-
-            <!-- Inscription -->
-            <div class="auth-form-panel" id="signupPanel">
-                <form onsubmit="handleAuth(event, 'signup')">
-                    <div class="input-group">
-                        <label for="signup-name">Nom et Prénom</label>
-                        <input type="text" id="signup-name" required placeholder="ex: Mohamed Aziz">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="signup-email">Adresse Email</label>
-                        <input type="email" id="signup-email" required placeholder="ex: mon@email.com">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="signup-password">Mot de passe</label>
-                        <input type="password" id="signup-password" required placeholder="Créez un mot de passe">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="student-level">Niveau Scolaire</label>
-                        <select id="student-level" onchange="handleLevelChange(this.value)" required>
-                            <option value="" disabled selected>-- Choisir votre niveau --</option>
-                            <option value="1ere">1ère Année Secondaire</option>
-                            <option value="2eme">2ème Année Secondaire</option>
-                            <option value="3eme">3ème Année Secondaire</option>
-                            <option value="bac">Baccalauréat</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group expandable-section" id="sectionExpandableGroup">
-                        <label for="student-section">Filière / Section Spécifique</label>
-                        <select id="student-section"></select>
-                    </div>
-
-                    <button type="submit" class="btn-custom">Créer mon compte</button>
-                </form>
-            </div>
         </div>
     </div>
 
@@ -4217,12 +3910,42 @@
         let currentSubject = "physique"; // 'physique' or 'chimie'
         let currentCategory = "cours"; // 'cours', 'exercices', 'series', 'devoirs'
 
-        // Structure de suivi par catégorie pour chaque leçon
-        // userProgressData[subject][category][lessonId] = { pdf: bool, vid: bool }
-        let userProgressData = {
-            physique: { cours: {}, exercices: {}, series: {}, devoirs: {} },
-            chimie: { cours: {}, exercices: {}, series: {}, devoirs: {} }
-        };
+        // Progression locale en attendant la synchronisation avec une table Supabase.
+        let currentUserId = null;
+        let userProgressData = createEmptyProgress();
+
+        function createEmptyProgress() {
+            return {
+                physique: { cours: {}, exercices: {}, series: {}, devoirs: {} },
+                chimie: { cours: {}, exercices: {}, series: {}, devoirs: {} }
+            };
+        }
+
+        function getProgressStorageKey() {
+            return currentUserId ? `zaidiProgress:${currentUserId}` : null;
+        }
+
+        function loadUserProgress(user) {
+            currentUserId = user?.id || user?.email || null;
+            userProgressData = createEmptyProgress();
+            const storageKey = getProgressStorageKey();
+            if (!storageKey) return;
+
+            try {
+                const savedProgress = JSON.parse(localStorage.getItem(storageKey) || 'null');
+                if (savedProgress?.physique && savedProgress?.chimie) {
+                    userProgressData = savedProgress;
+                }
+            } catch (error) {
+                console.warn('Impossible de restaurer la progression:', error);
+            }
+        }
+
+        function saveUserProgress() {
+            const storageKey = getProgressStorageKey();
+            if (!storageKey) return;
+            localStorage.setItem(storageKey, JSON.stringify(userProgressData));
+        }
 
         let focusRemaining = 25 * 60;
         let focusMode = 'focus';
@@ -4230,59 +3953,6 @@
         let focusSessions = Number(localStorage.getItem('zaidiFocusSessions') || 0);
         let lofiAudioContext = null;
         let lofiNodes = [];
-
-        function switchAuthMode(mode) {
-            const loginBtn = document.getElementById('tabLoginBtn');
-            const signupBtn = document.getElementById('tabSignupBtn');
-            const loginPanel = document.getElementById('loginPanel');
-            const signupPanel = document.getElementById('signupPanel');
-
-            if (mode === 'login') {
-                loginBtn.classList.add('active');
-                signupBtn.classList.remove('active');
-                loginPanel.classList.add('active');
-                signupPanel.classList.remove('active');
-            } else {
-                signupBtn.classList.add('active');
-                loginBtn.classList.remove('active');
-                signupPanel.classList.add('active');
-                loginPanel.classList.remove('active');
-                handleLevelChange(document.getElementById('student-level').value);
-            }
-        }
-
-        function handleLevelChange(levelKey) {
-            const sectionGroup = document.getElementById('sectionExpandableGroup');
-            const sectionSelect = document.getElementById('student-section');
-            
-            if (!sectionSelect) return;
-            sectionSelect.innerHTML = '';
-
-            if (levelKey === '1ere') {
-                const opt = document.createElement('option');
-                opt.value = "Tronc Commun";
-                opt.textContent = "Tronc Commun";
-                sectionSelect.appendChild(opt);
-                if(sectionGroup) sectionGroup.classList.remove('expanded');
-                return;
-            }
-
-            if (levelKey && curriculumData[levelKey]) {
-                const sectionsObj = curriculumData[levelKey].sections;
-                const sectionNames = Object.keys(sectionsObj);
-
-                sectionNames.forEach(secName => {
-                    const opt = document.createElement('option');
-                    opt.value = secName;
-                    opt.textContent = secName;
-                    sectionSelect.appendChild(opt);
-                });
-
-                if(sectionGroup) sectionGroup.classList.add('expanded');
-            } else {
-                if(sectionGroup) sectionGroup.classList.remove('expanded');
-            }
-        }
 
         function toggleDrawer() {
             document.getElementById('navDrawer').classList.toggle('open');
@@ -4361,13 +4031,6 @@
                 currentSubject = routeParts[1];
                 openSubjectHub(currentSubject, false);
                 selectCategory(routeParts[2], false);
-                return;
-            }
-
-            if (routeParts[0] === 'payment') {
-                document.getElementById('paymentStep').classList.remove('active');
-                document.getElementById('paymentPortal').classList.add('active');
-                paymentPortalHistoryActive = true;
                 return;
             }
 
@@ -4474,60 +4137,8 @@
             document.querySelectorAll('.levelNameDisplay').forEach(el => el.textContent = levelNameText);
         }
 
-        const PAYMENT_PORTAL_URL = '';
-        let paymentConfirmed = false;
-        let paymentPortalHistoryActive = false;
-
-        function setPaymentAccess(isConfirmed) {
-            paymentConfirmed = isConfirmed;
-            document.getElementById('accessDashboardBtn').disabled = !isConfirmed;
-        }
-
-        function showPaymentStep() {
-            document.getElementById('loginPanel').classList.remove('active');
-            document.getElementById('signupPanel').classList.remove('active');
-            document.getElementById('paymentStep').classList.add('active');
-            setPaymentAccess(false);
-        }
-
-        function returnToLogin() {
-            setPaymentAccess(false);
-            document.getElementById('paymentStep').classList.remove('active');
-            document.getElementById('loginPanel').classList.add('active');
-        }
-
-        function openPaymentPortal() {
-            if (window.location.hash !== '#/payment') {
-                window.history.pushState({ zaidiRoute: 'payment' }, '', '#/payment');
-            }
-            applyRoute('payment');
-        }
-
-        function closePaymentPortal() {
-            if (paymentPortalHistoryActive) {
-                window.history.back();
-                return;
-            }
-
-            hidePaymentPortal();
-        }
-
-        function hidePaymentPortal() {
-            document.getElementById('paymentPortal').classList.remove('active');
-            document.getElementById('paymentStep').classList.add('active');
-            paymentPortalHistoryActive = false;
-        }
-
         window.addEventListener('popstate', event => {
             const route = window.location.hash.replace(/^#\//, '') || 'home';
-            if (route === 'payment') {
-                applyRoute('payment');
-                return;
-            }
-
-            if (paymentPortalHistoryActive) {
-                hidePaymentPortal();
-            }
             applyRoute(route);
         });
 
@@ -4535,31 +4146,6 @@
             const route = window.location.hash.replace(/^#\//, '') || 'home';
             applyRoute(route);
         });
-
-        function submitPayment(event) {
-            event.preventDefault();
-
-            if (!PAYMENT_PORTAL_URL) {
-                alert('Le portail est prêt. Ajoutez votre URL Stripe, PayPal ou autre prestataire dans PAYMENT_PORTAL_URL pour activer le paiement réel.');
-                return;
-            }
-
-            window.open(PAYMENT_PORTAL_URL, '_blank', 'noopener,noreferrer');
-        }
-
-        function confirmPayment() {
-            setPaymentAccess(true);
-            closePaymentPortal();
-        }
-
-        function completeLogin() {
-            if (!paymentConfirmed) {
-                alert('Le paiement doit être confirmé avant l’accès à votre espace.');
-                return;
-            }
-
-            enterDashboard();
-        }
 
         function enterDashboard() {
 
@@ -4613,9 +4199,10 @@
 
         async function handleAuth(event, type) {
             event.preventDefault();
+            if (type !== 'login') return;
             
-            const email = document.getElementById(type === 'login' ? 'login-email' : 'signup-email').value;
-            const password = document.getElementById(type === 'login' ? 'login-password' : 'signup-password').value;
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
 
             if (type === 'signup') {
                 const name = document.getElementById('signup-name').value;
@@ -4638,6 +4225,7 @@
                     alert("Erreur d'inscription : " + error.message);
                     return;
                 }
+                loadUserProgress(data.user || { email });
                 prepareSignupDashboard(name, email);
                 enterDashboard();
                 
@@ -4708,6 +4296,7 @@
                 }
 
                 const fullName = activeProfile.full_name || authData.user.user_metadata?.full_name || loginIdentifier.split('@')[0] || "Élève";
+                loadUserProgress(authData.user);
                 currentLevelKey = activeProfile.level && curriculumData[activeProfile.level] ? activeProfile.level : "bac";
                 currentSectionKey = activeProfile.section && curriculumData[currentLevelKey].sections[activeProfile.section]
                     ? activeProfile.section
@@ -4745,16 +4334,9 @@
 
             document.getElementById('login-email').value = '';
             document.getElementById('login-password').value = '';
-            document.getElementById('signup-email').value = '';
-            document.getElementById('signup-password').value = '';
-            document.getElementById('signup-name').value = '';
-            document.getElementById('student-level').selectedIndex = 0;
-            document.getElementById('paymentStep').classList.remove('active');
-            document.getElementById('paymentPortal').classList.remove('active');
-            setPaymentAccess(false);
+            currentUserId = null;
+            userProgressData = createEmptyProgress();
             document.getElementById('loginPanel').classList.add('active');
-            const secGroup = document.getElementById('sectionExpandableGroup');
-            if(secGroup) secGroup.classList.remove('expanded');
         }
 
         function updateFocusDisplay() {
@@ -4923,6 +4505,7 @@
             const groups = [
                 { key: 'cours', label: 'Cours' },
                 { key: 'exercices', label: 'Exercices' },
+                { key: 'series', label: 'Séries' },
                 { key: 'devoirs', label: 'Devoirs' }
             ];
             const sections = groups.map(group => {
@@ -4937,7 +4520,7 @@
                 });
 
                 if (!matches.length) return '';
-                return `<div class="search-group">${group.label}</div>${matches.map(lesson => `<button type="button" class="search-result" onclick="jumpToSearchResult('${lesson.subject}', '${lesson.id}', '${group.key}')"><span>${escapeSearchText(lesson.title)}</span><small>${lesson.subject === 'physique' ? 'Physique' : 'Chimie'}</small></button>`).join('')}`;
+                return `<div class="search-group">${group.label}</div>${matches.map(lesson => `<button type="button" class="search-result" onclick="jumpToSearchResult('${encodeURIComponent(lesson.subject)}', '${encodeURIComponent(lesson.id)}', '${encodeURIComponent(group.key)}')"><span>${escapeSearchText(lesson.title)}</span><small>${lesson.subject === 'physique' ? 'Physique' : 'Chimie'}</small></button>`).join('')}`;
             }).join('');
 
             results.innerHTML = sections || '<div class="search-result"><span>Aucun résultat</span><small>Essaie un autre terme</small></div>';
@@ -4960,6 +4543,9 @@
         }
 
         function jumpToSearchResult(subject, lessonId, category = 'cours') {
+            subject = decodeURIComponent(subject);
+            lessonId = decodeURIComponent(lessonId);
+            category = decodeURIComponent(category);
             currentSubject = subject;
             closeSearch();
             openSubjectHub(subject);
@@ -5163,6 +4749,43 @@
             }
         }
 
+        async function restoreAuthenticatedSession() {
+            const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+            if (sessionError || !sessionData.session?.user) return;
+
+            const user = sessionData.session.user;
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('full_name, role, level, section, email')
+                .eq('id', user.id)
+                .maybeSingle();
+
+            if (!profile || profile.role !== 'student') return;
+
+            currentLevelKey = profile.level && curriculumData[profile.level] ? profile.level : 'bac';
+            currentSectionKey = profile.section && curriculumData[currentLevelKey].sections[profile.section]
+                ? profile.section
+                : Object.keys(curriculumData[currentLevelKey].sections)[0];
+            loadUserProgress(user);
+
+            const fullName = profile.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Élève';
+            const levelNameText = currentLevelKey === '1ere'
+                ? curriculumData[currentLevelKey].levelName
+                : `${curriculumData[currentLevelKey].levelName} — ${currentSectionKey}`;
+            document.getElementById('displayUserName').textContent = fullName;
+            document.getElementById('displayUserLevel').textContent = levelNameText;
+            updateCommandProfile(fullName, levelNameText);
+            document.getElementById('welcomeGreeting').textContent = `Bienvenue, ${fullName} !`;
+            document.getElementById('welcomeLevelInfo').textContent = `Filière active : ${levelNameText}.`;
+            updateLevelNameDisplays();
+
+            const activeSecData = curriculumData[currentLevelKey].sections[currentSectionKey];
+            document.getElementById('badgePhysiqueCount').textContent = `${activeSecData.physique.length} Chapitres`;
+            document.getElementById('badgeChimieCount').textContent = `${activeSecData.chimie.length} Chapitres`;
+            updateSubjectCardProgress();
+            enterDashboard();
+        }
+
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
         }
@@ -5297,12 +4920,14 @@
             const button = document.getElementById(`btn-complete-${lessonId}`);
             button.classList.toggle('completed', completed);
             button.textContent = completed ? '✓ Chapitre terminé' : 'Marquer comme terminé';
+            saveUserProgress();
             updateCategoryProgressCards();
         }
 
         restoreFocusState();
         initLabModel();
         initPlatformInteractions();
+        restoreAuthenticatedSession();
     </script>
 </body>
 </html>
