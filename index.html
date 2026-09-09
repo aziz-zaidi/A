@@ -2043,6 +2043,117 @@
             text-align: center;
         }
 
+        .devoirs-card {
+            cursor: pointer;
+        }
+
+        .devoirs-card:focus-visible {
+            outline: 2px solid var(--cyan);
+            outline-offset: 4px;
+        }
+
+        .devoirs-card .devoirs-open-hint {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 18px;
+            color: var(--cyan);
+            font-family: var(--mono);
+            font-size: 10px;
+        }
+
+        .devoirs-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 12000;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background: rgba(1, 8, 16, 0.76);
+            backdrop-filter: blur(14px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .devoirs-modal.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .devoirs-dialog {
+            width: min(720px, 100%);
+            max-height: min(720px, 90vh);
+            overflow: auto;
+            padding: 26px;
+            border: 1px solid rgba(99, 239, 255, 0.3);
+            border-radius: 20px;
+            background: linear-gradient(145deg, rgba(12, 23, 45, 0.98), rgba(5, 10, 22, 0.98));
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.6);
+            transform: translateY(12px) scale(0.98);
+            transition: transform 0.3s ease;
+        }
+
+        .devoirs-modal.is-open .devoirs-dialog {
+            transform: translateY(0) scale(1);
+        }
+
+        .devoirs-dialog-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .devoirs-dialog h2 {
+            color: var(--ink);
+            font-size: 24px;
+        }
+
+        .devoirs-dialog p {
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        .devoirs-dialog-close {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            background: rgba(99, 239, 255, 0.08);
+            color: var(--cyan);
+            cursor: pointer;
+            font-size: 22px;
+        }
+
+        .devoirs-resource-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .devoirs-resource-list a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            min-height: 48px;
+            padding: 12px 14px;
+            border: 1px solid rgba(99, 239, 255, 0.18);
+            border-radius: 10px;
+            background: rgba(99, 239, 255, 0.06);
+            color: var(--cyan);
+            text-decoration: none;
+        }
+
+        .devoirs-resource-list a:hover {
+            border-color: var(--cyan);
+            background: rgba(99, 239, 255, 0.12);
+        }
+
         .progress-info {
             font-family: 'IBM Plex Mono', monospace;
             font-size: 11px;
@@ -3582,6 +3693,20 @@
         </div>
     </div>
 
+    <div class="devoirs-modal" id="devoirsModal" aria-hidden="true" role="dialog" aria-labelledby="devoirsModalTitle">
+        <div class="devoirs-dialog">
+            <div class="devoirs-dialog-header">
+                <div>
+                    <span class="focus-kicker">Détail de l'évaluation</span>
+                    <h2 id="devoirsModalTitle">Trimestre</h2>
+                </div>
+                <button class="devoirs-dialog-close" type="button" onclick="closeDevoirsModal()" aria-label="Fermer">×</button>
+            </div>
+            <p id="devoirsModalDescription"></p>
+            <div class="devoirs-resource-list" id="devoirsModalResources"></div>
+        </div>
+    </div>
+
     <!-- AUTH SCREEN -->
     <div id="auth-screen">
         <video class="ambient-video auth-video" autoplay muted loop playsinline aria-hidden="true">
@@ -4608,6 +4733,9 @@
             document.getElementById('searchModal').addEventListener('click', event => {
                 if (event.target.id === 'searchModal') closeSearch();
             });
+            document.getElementById('devoirsModal').addEventListener('click', event => {
+                if (event.target.id === 'devoirsModal') closeDevoirsModal();
+            });
 
             let lastScrollY = window.scrollY;
             let scrollTicking = false;
@@ -4636,7 +4764,10 @@
                     event.preventDefault();
                     openSearch();
                 }
-                if (event.key === 'Escape') closeSearch();
+                if (event.key === 'Escape') {
+                    closeSearch();
+                    closeDevoirsModal();
+                }
             });
 
             if (!window.matchMedia('(pointer: coarse)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -4848,7 +4979,7 @@
             if (!sectionData) return;
 
             if (currentCategory === 'devoirs') {
-                renderDevoirs(container);
+                await renderDevoirs(container);
                 return;
             }
 
@@ -4920,7 +5051,7 @@
             });
         }
 
-        function renderDevoirs(container) {
+        async function renderDevoirs(container) {
             const devoirsByLevel = {
                 '1ere': {
                     label: '1ère Année Secondaire',
@@ -4941,15 +5072,37 @@
             };
 
             const level = devoirsByLevel[currentLevelKey] || devoirsByLevel.bac;
-            const trimesterCards = level.terms.map((content, index) => `
-                <article class="devoirs-card">
+            const { data: remoteLessons, error } = await supabaseClient
+                .from('lessons')
+                .select('id, title, description, pdf_url, video_url, level_key, section_key, trimester')
+                .eq('subject_id', currentSubject)
+                .eq('category', 'devoirs')
+                .eq('level_key', currentLevelKey)
+                .eq('section_key', currentSectionKey)
+                .order('created_at', { ascending: false });
+
+            const publishedLessons = error ? [] : (remoteLessons || []);
+            const trimesterCards = level.terms.map((content, index) => {
+                const trimester = index + 1;
+                const trimesterLessons = publishedLessons.filter(lesson => Number(lesson.trimester || 1) === trimester);
+                const trimesterPayload = trimesterLessons.map(lesson => ({
+                    title: lesson.title,
+                    description: lesson.description || '',
+                    pdf_url: safeResourceUrl(lesson.pdf_url),
+                    video_url: safeResourceUrl(lesson.video_url)
+                }));
+                const lessonPayload = btoa(unescape(encodeURIComponent(JSON.stringify(trimesterPayload))));
+                return `
+                <article class="devoirs-card" role="button" tabindex="0" onclick="openDevoirsModal(${trimester}, '${lessonPayload}')" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openDevoirsModal(${trimester}, '${lessonPayload}'); }">
                     <span class="devoirs-kicker">📝 Évaluation continue</span>
-                    <h3>Trimestre ${index + 1}</h3>
+                    <h3>Trimestre ${trimester}</h3>
                     <ul>
                         <li>${content}</li>
                     </ul>
+                    <span class="devoirs-open-hint">Ouvrir le détail →</span>
                 </article>
-            `).join('');
+            `;
+            }).join('');
 
             container.innerHTML = `
                 <div class="devoirs-header">
@@ -4959,6 +5112,36 @@
                 </div>
                 <div class="devoirs-grid">${trimesterCards}</div>
             `;
+        }
+
+        function openDevoirsModal(trimester, encodedLessons) {
+            const modal = document.getElementById('devoirsModal');
+            const description = document.getElementById('devoirsModalDescription');
+            const resources = document.getElementById('devoirsModalResources');
+            let lessons = [];
+
+            try {
+                lessons = JSON.parse(decodeURIComponent(escape(atob(encodedLessons))));
+            } catch {
+                lessons = [];
+            }
+
+            document.getElementById('devoirsModalTitle').textContent = `Trimestre ${trimester}`;
+            description.textContent = lessons.length
+                ? `${lessons.length} ressource${lessons.length > 1 ? 's' : ''} publiée${lessons.length > 1 ? 's' : ''} pour cette période.`
+                : 'Les ressources détaillées seront ajoutées prochainement.';
+            resources.innerHTML = lessons.flatMap(lesson => [
+                lesson.pdf_url ? `<a href="${escapeHtml(lesson.pdf_url)}" target="_blank" rel="noopener noreferrer"><span>▣ ${escapeHtml(lesson.title)}</span><strong>PDF ↗</strong></a>` : '',
+                lesson.video_url ? `<a href="${escapeHtml(lesson.video_url)}" target="_blank" rel="noopener noreferrer"><span>▶ ${escapeHtml(lesson.title)}</span><strong>Vidéo ↗</strong></a>` : ''
+            ]).filter(Boolean).join('');
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeDevoirsModal() {
+            const modal = document.getElementById('devoirsModal');
+            modal.classList.remove('is-open');
+            modal.setAttribute('aria-hidden', 'true');
         }
 
         function toggleResource(lessonId, type) {
