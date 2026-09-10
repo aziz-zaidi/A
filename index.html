@@ -4290,9 +4290,7 @@
                 levelName: "2ème Année Secondaire",
                 sections: {
                     "Sciences": { physique: [p2_1, p2_2, p2_3, p2_4, p2_5], chimie: [c2_1, c2_2, c2_3, c2_4] },
-                    "Technologie": { physique: [p2_1, p2_2, p2_3, p2_4, p2_5], chimie: [c2_1, c2_2, c2_3, c2_4] },
-                    "Économie et Services": { physique: [p2_1, p2_2, p2_3, p2_4, p2_5], chimie: [c2_1, c2_2, c2_3, c2_4] },
-                    "Lettres": { physique: [p2_1, p2_2, p2_3, p2_4, p2_5], chimie: [c2_1, c2_2, c2_3, c2_4] }
+                    "Technologie": { physique: [p2_1, p2_2, p2_3, p2_4, p2_5], chimie: [c2_1, c2_2, c2_3, c2_4] }
                 }
             },
             "3eme": {
@@ -4300,11 +4298,7 @@
                 sections: {
                     "Mathématiques": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] },
                     "Sciences Expérimentales": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] },
-                    "Sciences Techniques": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] },
-                    "Sciences de l'Informatique": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] },
-                    "Économie et Gestion": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] },
-                    "Lettres": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] },
-                    "Sport": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] }
+                    "Sciences Techniques": { physique: [p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7], chimie: [c3_1, c3_2, c3_3, c3_4, c3_5] }
                 }
             },
             "bac": {
@@ -4312,11 +4306,7 @@
                 sections: {
                     "Bac Mathématiques": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8, p4_9], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] },
                     "Bac Sciences Expérimentales": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8, p4_9], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] },
-                    "Bac Sciences Techniques": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] },
-                    "Bac Sciences de l'Informatique": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] },
-                    "Bac Économie et Gestion": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] },
-                    "Bac Lettres": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] },
-                    "Bac Sport": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] }
+                    "Bac Sciences Techniques": { physique: [p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8], chimie: [c4_1, c4_2, c4_3, c4_4, c4_5, c4_6, c4_7, c4_8] }
                 }
             }
         };
@@ -5363,6 +5353,7 @@
                 const trimesterPayload = trimesterLessons.map(lesson => ({
                     title: lesson.title,
                     description: lesson.description || '',
+                    assessment_type: lesson.assessment_type || '',
                     pdf_url: safeResourceUrl(lesson.pdf_url),
                     video_url: safeResourceUrl(lesson.video_url)
                 }));
@@ -5406,8 +5397,8 @@
                 ? `${lessons.length} ressource${lessons.length > 1 ? 's' : ''} publiée${lessons.length > 1 ? 's' : ''} pour cette période.`
                 : 'Les ressources détaillées seront ajoutées prochainement.';
             resources.innerHTML = lessons.flatMap(lesson => [
-                lesson.pdf_url ? `<a href="${escapeHtml(lesson.pdf_url)}" target="_blank" rel="noopener noreferrer"><span>▣ ${escapeHtml(lesson.title)}</span><strong>PDF ↗</strong></a>` : '',
-                lesson.video_url ? `<a href="${escapeHtml(lesson.video_url)}" target="_blank" rel="noopener noreferrer"><span>▶ ${escapeHtml(lesson.title)}</span><strong>Vidéo ↗</strong></a>` : ''
+                lesson.pdf_url ? `<a href="${escapeHtml(lesson.pdf_url)}" target="_blank" rel="noopener noreferrer"><span>▣ ${escapeHtml(lesson.title)}${lesson.assessment_type ? ` — ${escapeHtml(lesson.assessment_type.replace(/_/g, ' '))}` : ''}</span><strong>PDF ↗</strong></a>` : '',
+                lesson.video_url ? `<a href="${escapeHtml(lesson.video_url)}" target="_blank" rel="noopener noreferrer"><span>▶ ${escapeHtml(lesson.title)}${lesson.assessment_type ? ` — ${escapeHtml(lesson.assessment_type.replace(/_/g, ' '))}` : ''}</span><strong>Vidéo ↗</strong></a>` : ''
             ]).filter(Boolean).join('');
             modal.classList.add('is-open');
             modal.setAttribute('aria-hidden', 'false');
