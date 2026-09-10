@@ -5204,7 +5204,12 @@
 
         function safeResourceUrl(value) {
             try {
-                const url = new URL(value, window.location.href);
+                const rawValue = String(value || '').trim();
+                if (!rawValue) return '';
+                const candidate = /^[a-z][a-z\d+.-]*:\/\//i.test(rawValue)
+                    ? rawValue
+                    : `https://${rawValue}`;
+                const url = new URL(candidate);
                 return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
             } catch {
                 return '';
