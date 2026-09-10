@@ -5261,8 +5261,7 @@
             let publishedLessons = [];
             const { data: remoteLessons, error } = await supabaseClient
                 .from('lessons')
-                .select('*')
-                .order('created_at', { ascending: false });
+                .select('id, subject_id, category, level_key, section_key, trimester, assessment_type, title, description, pdf_url, video_url');
 
             if (!error && remoteLessons) {
                 publishedLessons = remoteLessons.filter(matchesLessonContext);
@@ -5340,10 +5339,14 @@
             const level = devoirsByLevel[currentLevelKey] || devoirsByLevel.bac;
             const { data: remoteLessons, error } = await supabaseClient
                 .from('lessons')
-                .select('*')
-                .order('created_at', { ascending: false });
+                .select('id, subject_id, category, level_key, section_key, trimester, assessment_type, title, description, pdf_url, video_url');
 
-            const publishedLessons = error ? [] : (remoteLessons || []).filter(lesson => matchesLessonContext({
+            if (error) {
+                container.innerHTML = `<div class="content-state">Impossible de charger les devoirs.<br><small>${escapeHtml(error.message || 'Erreur Supabase')}</small></div>`;
+                return;
+            }
+
+            const publishedLessons = (remoteLessons || []).filter(lesson => matchesLessonContext({
                 ...lesson,
                 category: lesson.category || 'devoirs'
             }));
