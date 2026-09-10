@@ -5292,7 +5292,7 @@
                 const pdfUrl = safeResourceUrl(lesson.pdf_url);
                 const videoUrl = safeResourceUrl(lesson.video_url);
                 const resourceLinks = [
-                    pdfUrl ? `<a class="lesson-resource-link" href="${escapeHtml(pdfUrl)}" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">▣</span> Lire le PDF</a>` : '',
+                    pdfUrl ? `<a class="lesson-resource-link" href="${escapeHtml(pdfUrl)}" target="_blank" rel="noopener noreferrer" onclick="markResourceCompleted('${escapeHtml(lesson.id)}', '${escapeHtml(currentCategory)}')"><span aria-hidden="true">▣</span> Lire le PDF</a>` : '',
                     videoUrl ? `<a class="lesson-resource-link" href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">▶</span> Voir la vidéo</a>` : ''
                 ].filter(Boolean).join(' · ');
 
@@ -5311,9 +5311,6 @@
                             <div class="progress-bar-bg">
                                 <div class="progress-bar-fill" id="progBar-${lesson.id}" style="width: ${score}%;"></div>
                             </div>
-                        </div>
-                        <div class="lesson-footer">
-                            <button onclick="toggleResource('${lesson.id}', '${currentCategory}')" class="btn-action btn-complete ${completed ? 'completed' : ''}" id="btn-complete-${lesson.id}">${completed ? '✓ Chapitre terminé' : 'Marquer comme terminé'}</button>
                         </div>
                     </div>
                 `;
@@ -5359,6 +5356,7 @@
                 const trimester = index + 1;
                 const trimesterLessons = publishedLessons.filter(lesson => Number(lesson.trimester || 1) === trimester);
                 const trimesterPayload = trimesterLessons.map(lesson => ({
+                    id: lesson.id,
                     title: lesson.title,
                     description: lesson.description || '',
                     assessment_type: lesson.assessment_type || '',
@@ -5405,7 +5403,7 @@
                 ? `${lessons.length} ressource${lessons.length > 1 ? 's' : ''} publiée${lessons.length > 1 ? 's' : ''} pour cette période.`
                 : 'Les ressources détaillées seront ajoutées prochainement.';
             resources.innerHTML = lessons.flatMap(lesson => [
-                lesson.pdf_url ? `<a href="${escapeHtml(lesson.pdf_url)}" target="_blank" rel="noopener noreferrer"><span>▣ ${escapeHtml(lesson.title)}${lesson.assessment_type ? ` — ${escapeHtml(lesson.assessment_type.replace(/_/g, ' '))}` : ''}</span><strong>PDF ↗</strong></a>` : '',
+                lesson.pdf_url ? `<a href="${escapeHtml(lesson.pdf_url)}" target="_blank" rel="noopener noreferrer" onclick="markResourceCompleted('${escapeHtml(lesson.id)}', 'devoirs')"><span>▣ ${escapeHtml(lesson.title)}${lesson.assessment_type ? ` — ${escapeHtml(lesson.assessment_type.replace(/_/g, ' '))}` : ''}</span><strong>PDF ↗</strong></a>` : '',
                 lesson.video_url ? `<a href="${escapeHtml(lesson.video_url)}" target="_blank" rel="noopener noreferrer"><span>▶ ${escapeHtml(lesson.title)}${lesson.assessment_type ? ` — ${escapeHtml(lesson.assessment_type.replace(/_/g, ' '))}` : ''}</span><strong>Vidéo ↗</strong></a>` : ''
             ]).filter(Boolean).join('');
             modal.classList.add('is-open');
@@ -5418,20 +5416,13 @@
             modal.setAttribute('aria-hidden', 'true');
         }
 
-        function toggleResource(lessonId, type) {
-            const prog = userProgressData[currentSubject][currentCategory][lessonId];
-
+        function markResourceCompleted(lessonId, type) {
             if (!['cours', 'exercices', 'series', 'devoirs'].includes(type)) return;
-            const completed = userProgressData[currentSubject][type][lessonId] !== true;
-            userProgressData[currentSubject][type][lessonId] = completed;
-            const score = completed ? 100 : 0;
-
-            document.getElementById(`progVal-${lessonId}`).textContent = `${score} / 100`;
-            document.getElementById(`progBar-${lessonId}`).style.width = `${score}%`;
-
-            const button = document.getElementById(`btn-complete-${lessonId}`);
-            button.classList.toggle('completed', completed);
-            button.textContent = completed ? '✓ Chapitre terminé' : 'Marquer comme terminé';
+            userProgressData[currentSubject][type][lessonId] = true;
+            const progressValue = document.getElementById(`progVal-${lessonId}`);
+            const progressBar = document.getElementById(`progBar-${lessonId}`);
+            if (progressValue) progressValue.textContent = '100 / 100';
+            if (progressBar) progressBar.style.width = '100%';
             saveUserProgress();
             updateCategoryProgressCards();
         }
